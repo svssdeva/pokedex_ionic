@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {catchError, retry, map} from 'rxjs/operators';
 import {handleError} from '../error-handler/error-handler.service';
+import {Observable} from 'rxjs';
+import {PokemonListModal} from '../../home/home.page';
 @Injectable({
   providedIn: 'root'
 })

@@ -14,7 +14,8 @@ export class DetailsPage implements OnInit {
   name: string;
   pokemon: PokemonDetailModal;
   processing: boolean;
-
+  showGif: boolean;
+  activeType: string;
   slideOpts = {
     autoplay: {
       delay: 1200,
@@ -26,12 +27,13 @@ export class DetailsPage implements OnInit {
               private navController: NavController,
               private globalService: GlobalService) {
     this.pokemon = new PokemonDetailModal({});
+    this.activeType = '';
   }
 
   ngOnInit() {
+    this.showGif = false;
     this.index = +this.activatedRoute.snapshot.paramMap.get('index') || 0;
     this.name = this.activatedRoute.snapshot.paramMap.get('name') || '';
-    console.log(this.index);
     if (this.index === 0) {
       this.globalService.showMessage('toast', {message: `There was some issue with index`});
       this.navController.pop();
@@ -45,6 +47,9 @@ export class DetailsPage implements OnInit {
       const res = await this.apiService.getDetails(this.index).toPromise();
       console.log(res);
       this.pokemon = new PokemonDetailModal(res);
+      if (this.pokemon.types.length > 0) {
+        this.setActiveType(this.pokemon.types[0].type.name);
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -52,10 +57,19 @@ export class DetailsPage implements OnInit {
       console.log(this.pokemon);
     }
   }
+  setActiveType(name: string) {
+    this.activeType = name;
+  }
+  toggleGif(event) {
+    console.log(event);
+    this.showGif = event.detail.checked;
+  }
 }
 
 export class PokemonDetailModal {
   name: string;
+  gifImage: string;
+
   baseExperience: number;
   height: number;
   weight: number;
@@ -77,6 +91,7 @@ export class PokemonDetailModal {
     this.weight = pokemon.weight || 0;
     this.id = pokemon.id || 0;
     this.species = pokemon.species || {};
+    this.gifImage = `https://projectpokemon.org/images/normal-sprite/${this.name}.gif`;
     if (pokemon) {
       if (pokemon.images) {
         pokemon.images.forEach(item => {
@@ -108,12 +123,23 @@ export class PokemonDetailModal {
       } else {
         this.moves = [];
       }
+      if (pokemon.types) {
+        pokemon.types.forEach(item => {
+          this.types.push(new TypesModal(item));
+        });
+      } else {
+        this.types = [];
+      }
     } else {
       this.moves = [];
       this.stats = [];
       this.abilities = [];
       this.images = [];
+      this.types = [];
     }
+    this.images.push(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${this.id}.png`);
+    // eslint-disable-next-line max-len
+    this.images.push(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${this.id}.svg`);
   }
 }
 
@@ -128,13 +154,13 @@ export class AbilityModal {
   }
 }
 export class TypesModal {
-  ability: {
+  type: {
     name: string;
     url: string;
   };
   constructor(props) {
     props = props || {};
-    this.ability = props.ability || {name: '', url: ''};
+    this.type = props.type || {name: '', url: ''};
   }
 }
 

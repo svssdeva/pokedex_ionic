@@ -1,0 +1,91 @@
+ion-header {
+  ion-toolbar {
+
+  }
+
+}
+
+ion-content {
+  .details_section {
+    .details_card {
+      box-shadow: none;
+      ion-card-header {
+        ion-card-title {
+          font-weight: 600;
+          text-transform: capitalize;
+        }
+      }
+      ion-card-content {
+        .stat_list {
+          .stat {
+            text-transform: capitalize;
+            font-weight: 500;
+            margin-right: 0;
+          }
+          .value {
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+.fire-bg {
+  --background: var(--ion-color-fire);
+  background: var(--ion-color-fire);
+}
+
+.grass-bg {
+  --background: var(--ion-color-grass);
+  background: var(--ion-color-grass);
+}
+.electric-bg {
+  --background: var(--ion-color-electric);
+  background: var(--ion-color-electric);
+}
+.water-bg {
+  --background: var(--ion-color-water);
+  background: var(--ion-color-water);
+}
+.ground-bg {
+  --background: var(--ion-color-ground);
+  background: var(--ion-color-ground);
+}
+.rock-bg {
+  --background: var(--ion-color-rock);
+  background: var(--ion-color-rock);
+}
+.fairy-bg {
+  --background: var(--ion-color-fairy);
+  background: var(--ion-color-fairy);
+}
+.poison-bg {
+  --background: var(--ion-color-poison);
+  background: var(--ion-color-poison);
+}
+.bug-bg {
+  --background: var(--ion-color-bug);
+  background: var(--ion-color-bug);
+}
+.dragon-bg {
+  --background: var(--ion-color-dragon);
+  background: var(--ion-color-dragon);
+}
+.psychic-bg {
+  --background: var(--ion-color-psychic);
+  background: var(--ion-color-psychic);
+}
+.flying-bg {
+  --background: var(--ion-color-flying);
+  background: var(--ion-color-flying);
+}
+.fighting-bg {
+  --background: var(--ion-color-fighting);
+  background: var(--ion-color-fighting);
+}
+.normal-bg {
+  --background: var(--ion-color-normal);
+  background: var(--ion-color-normal);
+}

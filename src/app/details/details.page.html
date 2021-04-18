@@ -1,21 +1,74 @@
-<ion-header>
-  <ion-toolbar>
+<ion-header class="ion-no-border">
+  <ion-toolbar class="{{activeType}}-bg">
   <ion-buttons slot="start">
-    <ion-back-button color="danger"  [text]="name || 'Pokemon'"></ion-back-button>
+    <ion-back-button color="dark"></ion-back-button>
   </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <section class="details_section" *ngIf="processing === false && pokemon?.name?.length > 0">
+    <!--<ion-item lines="none">
+      <ion-label slot="start" color="medium">Toggle Gif Image</ion-label>
+      <ion-toggle role="switch" slot="end" [value]="showGif" (ionChange)="toggleGif($event)"></ion-toggle>
+    </ion-item>-->
     <ion-row>
-      <ion-col size="12">
+      <ion-col size="12" [hidden]="showGif === true">
         <ion-slides pager="true" [options]="slideOpts">
           <ion-slide *ngFor="let sprite of pokemon.images">
             <img [src]="sprite" alt="" style="height: 250px">
           </ion-slide>
         </ion-slides>
       </ion-col>
+      <ion-col size="12" class="vertical-align" [hidden]="showGif === false">
+        <img style="height: 100px" [src]="pokemon?.gifImage || ''">
+      </ion-col>
+      <ion-col size="12" >
+        <ion-card class="details_card {{activeType}}-bg">
+          <ion-card-header>
+            <ion-card-title color="dark">#{{pokemon.id}} {{pokemon.name}}</ion-card-title>
+            <ion-chip *ngFor="let type of pokemon.types" class="{{type.type.name}}-bg" (click)="setActiveType(type.type.name)">
+                <ion-label color="dark">{{type.type.name}}</ion-label>
+            </ion-chip>
+          </ion-card-header>
+          <ion-card-content class="vertical-align">
+            <img style="height: 100px" [src]="pokemon?.gifImage || ''">
+          </ion-card-content>
+          <ion-card-content>
+
+              <ion-list class="stat_list">
+                <ion-item lines="full" *ngFor="let stat of pokemon.stats">
+                  <ion-label class="stat" slot="start">{{stat.stat.name}} : </ion-label>
+                  <ion-label class="value" slot="end">{{stat.baseStat}}</ion-label>
+                </ion-item>
+                <ion-item lines="full">
+                  <ion-label class="stat" slot="start">Height : </ion-label>
+                  <ion-label class="value" slot="end">{{pokemon.height}}</ion-label>
+                </ion-item>
+                <ion-item lines="full">
+                  <ion-label class="stat" slot="start">Weight : </ion-label>
+                  <ion-label class="value" slot="end">{{pokemon.weight}}</ion-label>
+                </ion-item>
+              </ion-list>
+
+            <ion-list lines="full">
+                <ion-item>
+                  <ion-label class="ion-text-wrap"><b>Abilities: </b> <span *ngFor="let ability of pokemon.abilities; let isLast = last" class="ion-text-capitalize">
+                    {{ability.ability.name}}{{!isLast ? ',' : ''}}
+                  </span></ion-label>
+                </ion-item>
+            </ion-list>
+            <ion-list lines="full">
+              <ion-item>
+                <ion-label class="ion-text-wrap"><b>Moves: </b> <span *ngFor="let move of pokemon.moves; let isLast = last" class="ion-text-capitalize">
+                    {{move.move.name}}{{!isLast ? ',' : ''}}
+                  </span></ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
     </ion-row>
   </section>
   <section style="height: 100%" *ngIf="processing === true && pokemon?.name?.length === 0">

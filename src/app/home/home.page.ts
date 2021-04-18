@@ -15,7 +15,6 @@ export class HomePage implements OnInit, OnDestroy {
   processing: boolean;
   pokemons: Array<PokemonListModal> = [];
   canPaginate: boolean;
-
   constructor(private apiService: ApiService,
               private router: Router,
               private globalService: GlobalService) {
@@ -36,11 +35,12 @@ export class HomePage implements OnInit, OnDestroy {
       this.processing = true;
     }
     try {
+      const items: Array<PokemonListModal> = [];
       const res = await this.apiService.getPokemons(this.offset, this.limit, this.type).toPromise();
+      console.log(res);
       if (res.length < 20) {
         this.canPaginate = false;
       }
-      const items: Array<PokemonListModal> = [];
       res.forEach(data => {
         items.push(new PokemonListModal(data));
       });
@@ -82,13 +82,13 @@ export class HomePage implements OnInit, OnDestroy {
       }
     }
   }
-
 }
 
 export class PokemonListModal {
   name: string;
   index: number;
   image: string;
+
   url: string;
   constructor(pokemon) {
     pokemon = pokemon || {};
