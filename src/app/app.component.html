@@ -1,3 +1,22 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-menu contentId="main" menuId="myMenu" side="start">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title color="tertiary">Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-item lines="none">
+        <ion-icon name="moon" slot="start" color="medium"></ion-icon>
+        <ion-label color="medium">Toggle Dark Theme</ion-label>
+        <ion-toggle role="switch" slot="end" (ionChange)="onClick($event)"></ion-toggle>
+      </ion-item>
+    </ion-content>
+    <ion-footer>
+      <ion-toolbar>
+        <ion-title color="dark">App Version: {{appVersion}}</ion-title>
+      </ion-toolbar>
+    </ion-footer>
+  </ion-menu>
+  <ion-router-outlet id="main"></ion-router-outlet>
 </ion-app>

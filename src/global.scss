@@ -24,3 +24,16 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;600;800&display=swap');
+
+* {
+  font-family: 'Raleway', sans-serif;
+}
+
+.vertical-align {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+}
