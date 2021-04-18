@@ -1,6 +1,6 @@
 {
-  "appId": "io.ionic.starter",
-  "appName": "pokedex_ionic",
+  "appId": "com.deva.pokedex",
+  "appName": "Pokedex",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",
