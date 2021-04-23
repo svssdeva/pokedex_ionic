@@ -23,9 +23,16 @@ npm-debug.log*
 /.sourcemaps
 /.versions
 /.vscode
+#www/
 /coverage
 /dist
+tmp/
+temp/
 /node_modules
 /platforms
 /plugins
 /www
+plugins/
+plugins/android.json
+plugins/ios.json
+.history

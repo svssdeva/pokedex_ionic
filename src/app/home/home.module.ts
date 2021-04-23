@@ -6,6 +6,7 @@ import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
 import {ApiService} from '../services/api-service/api-service.service';
+import {NetworkAlertModalComponent} from './network-alert-modal/network-alert-modal.component';
 
 
 @NgModule({
@@ -15,7 +16,7 @@ import {ApiService} from '../services/api-service/api-service.service';
     IonicModule,
     HomePageRoutingModule
   ],
-  declarations: [HomePage],
+  declarations: [HomePage, NetworkAlertModalComponent],
   providers: [ApiService]
 })
 export class HomePageModule {}

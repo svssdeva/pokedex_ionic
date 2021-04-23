@@ -1,5 +1,5 @@
-import {Component, OnInit, Renderer2, ViewChild} from '@angular/core';
-import {IonToggle, MenuController} from '@ionic/angular';
+import {Component, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {MenuController, Platform} from '@ionic/angular';
 import {GlobalService} from './services/global-service/global-service.service';
 
 @Component({
@@ -7,19 +7,28 @@ import {GlobalService} from './services/global-service/global-service.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   appVersion: number;
-  constructor(private globalService: GlobalService, private menuController: MenuController, private renderer2: Renderer2) {
+  constructor(private globalService: GlobalService,
+              private menuController: MenuController,
+              private renderer2: Renderer2,
+              private platform: Platform) {
     this.appVersion = this.globalService.appVersion || 1;
-  }
-  ngOnInit() {
+    this.platform.ready().then(() => {
+      this.globalService.getNetWorkStatus();
+    });
   }
 
-  onClick(event){
-    if(event.detail.checked){
+  ngOnInit() {
+
+  }
+  async ngOnDestroy() {
+    this.globalService.removeNetworkListeners();
+  }
+  onClick(event) {
+    if (event.detail.checked) {
       this.renderer2.setAttribute(document.body, 'color-theme', 'dark');
-    }
-    else{
+    } else {
       this.renderer2.setAttribute(document.body, 'color-theme', 'light');
     }
   }

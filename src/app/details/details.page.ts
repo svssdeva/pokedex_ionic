@@ -39,6 +39,16 @@ export class DetailsPage implements OnInit {
       this.navController.pop();
     } else {
         this.fetchDetails();
+        this.getSpecies();
+    }
+  }
+  async getSpecies() {
+    try {
+      const res = await this.apiService.getSpecies(this.name).toPromise();
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    } finally {
     }
   }
   async fetchDetails() {

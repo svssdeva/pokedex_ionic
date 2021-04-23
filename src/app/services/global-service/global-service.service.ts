@@ -1,14 +1,36 @@
 import { Injectable } from '@angular/core';
 import {AlertController, ToastController} from '@ionic/angular';
+import { Plugins } from '@capacitor/core';
+import {BehaviorSubject} from "rxjs";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const { Network } = Plugins;
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalService {
   appVersion = 1;
+  private _networkStatus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   constructor(private toastController: ToastController,
-              private alertController: AlertController) { }
-
+              private alertController: AlertController) {
+   Network.addListener('networkStatusChange', (status) => {
+      this.setNetworkConnectionValue(status.connected);
+    });
+  }
+  getNetWorkStatus() {
+    Network.getStatus().then(status => {
+      this.setNetworkConnectionValue(status.connected);
+    });
+  }
+  setNetworkConnectionValue(value: boolean) {
+    this._networkStatus$.next(value);
+  }
+  getNetworkConnectionValue() {
+    return this._networkStatus$.asObservable();
+  }
+  removeNetworkListeners() {
+    Network.removeAllListeners();
+  }
   async showMessage(type, data) {
     switch (type.toLowerCase()) {
       case 'alert' :
