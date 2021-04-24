@@ -8,13 +8,15 @@ import { DetailsPageRoutingModule } from './details-routing.module';
 
 import { DetailsPage } from './details.page';
 import {ApiService} from '../services/api-service/api-service.service';
+import { SafePipeModule } from 'safe-pipe';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    DetailsPageRoutingModule
+    DetailsPageRoutingModule,
+    SafePipeModule,
   ],
   declarations: [DetailsPage],
   providers: [ApiService]

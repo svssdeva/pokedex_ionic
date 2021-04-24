@@ -34,29 +34,37 @@
           <ion-card-content class="vertical-align">
             <img style="height: 100px" [src]="pokemon?.gifImage || ''">
           </ion-card-content>
-          <ion-card-content>
 
-              <ion-list class="stat_list">
-                <ion-item lines="full" *ngFor="let stat of pokemon.stats">
-                  <ion-label class="stat" slot="start">{{stat.stat.name}} : </ion-label>
-                  <ion-label class="value" slot="end">{{stat.baseStat}}</ion-label>
-                </ion-item>
-                <ion-item lines="full">
-                  <ion-label class="stat" slot="start">Height : </ion-label>
-                  <ion-label class="value" slot="end">{{pokemon.height}}</ion-label>
-                </ion-item>
-                <ion-item lines="full">
-                  <ion-label class="stat" slot="start">Weight : </ion-label>
-                  <ion-label class="value" slot="end">{{pokemon.weight}}</ion-label>
-                </ion-item>
-              </ion-list>
+          <ion-segment swipeGesture="true" scrollable [value]="activeSegment" (ionChange)="changeSegment($event)">
+            <ion-segment-button value="stats">
+              <ion-label>Stats</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="details">
+              <ion-label>Details</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+          <ion-card-content [hidden]="activeSegment === 'details'">
 
+            <ion-list class="stat_list">
+              <ion-item lines="full" *ngFor="let stat of pokemon.stats">
+                <ion-label class="stat" slot="start">{{stat.stat.name}} : </ion-label>
+                <ion-label class="value" slot="end">{{stat.baseStat}}</ion-label>
+              </ion-item>
+              <ion-item lines="full">
+                <ion-label class="stat" slot="start">Height : </ion-label>
+                <ion-label class="value" slot="end">{{pokemon.height}}</ion-label>
+              </ion-item>
+              <ion-item lines="full">
+                <ion-label class="stat" slot="start">Weight : </ion-label>
+                <ion-label class="value" slot="end">{{pokemon.weight}}</ion-label>
+              </ion-item>
+            </ion-list>
             <ion-list lines="full">
-                <ion-item>
-                  <ion-label class="ion-text-wrap"><b>Abilities: </b> <span *ngFor="let ability of pokemon.abilities; let isLast = last" class="ion-text-capitalize">
+              <ion-item>
+                <ion-label class="ion-text-wrap"><b>Abilities: </b> <span *ngFor="let ability of pokemon.abilities; let isLast = last" class="ion-text-capitalize">
                     {{ability.ability.name}}{{!isLast ? ',' : ''}}
                   </span></ion-label>
-                </ion-item>
+              </ion-item>
             </ion-list>
             <ion-list lines="full">
               <ion-item>
@@ -65,6 +73,23 @@
                   </span></ion-label>
               </ion-item>
             </ion-list>
+          </ion-card-content>
+          <ion-card-content class="details_card_content" [hidden]="activeSegment === 'stats'">
+             <section>
+               <ion-icon name="mic-circle-outline" color="dark" class="ion-tappable" (click)="speakUp(returnDescription(speciesDetails.flavorTextEntries))"></ion-icon>
+               <ion-card-title class="ion-text-justify description_text" [innerHTML]="returnDescription(speciesDetails.flavorTextEntries) | safe: 'html'"></ion-card-title>
+               <br>
+               <ion-card-subtitle >Habitat : {{speciesDetails.habitat}}</ion-card-subtitle>
+               <ion-card-subtitle>Legendary: {{speciesDetails.isLegendary === true ? 'Yes' : 'No'}}</ion-card-subtitle>
+               <ion-card-subtitle>Mythical: {{speciesDetails.isMythical === true ? 'Yes' : 'No'}}</ion-card-subtitle>
+             </section>
+            <section class="ion-margin-top evolve_section" [hidden]="speciesDetails?.evolvesFrom?.name === ''">
+              <ion-title color="dark">Evolves From :  {{speciesDetails?.evolvesFrom?.name || ''}}</ion-title>
+              <ion-img [src]="speciesDetails?.evolvesFrom?.gifImage || ''"></ion-img>
+              <br [hidden]="evolutionChain?.evolvesTo[0]?.evolvesTo.length === 0">
+              <ion-title [hidden]="evolutionChain?.evolvesTo[0]?.evolvesTo.length === 0" color="dark">Evolves To :  {{evolutionChain?.evolvesTo[0]?.evolvesTo[0]?.species.name || ''}}</ion-title>
+              <ion-img [hidden]="evolutionChain?.evolvesTo[0]?.evolvesTo.length === 0" [src]="'https://projectpokemon.org/images/normal-sprite/' + evolutionChain?.evolvesTo[0]?.evolvesTo[0]?.species.name + '.gif' || ''"></ion-img>
+            </section>
           </ion-card-content>
         </ion-card>
       </ion-col>

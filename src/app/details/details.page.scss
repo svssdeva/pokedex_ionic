@@ -26,6 +26,42 @@ ion-content {
             font-weight: 600;
           }
         }
+
+      }
+      .details_card_content {
+        .description_text {
+          font-weight: 600;
+          padding: 6px;
+          color: var(--ion-color-dark);
+        }
+        ion-card-subtitle {
+          font-weight: 700;
+          color: var(--ion-color-dark);
+          font-size: 16px;
+        }
+        ion-icon {
+          font-size: 32px;
+        }
+        .evolve_section {
+          border-top: 2px solid var(--ion-color-light);
+          ion-title {
+            font-weight: 700;
+            text-decoration: underline;
+            padding: 0;
+          }
+          ion-img {
+            height: 100px;
+          }
+        }
+      }
+      ion-segment {
+        --background: var(--ion-color-light);
+        ion-segment-button {
+          --color: var(--ion-color-secondary);
+          --color-checked: var(--ion-color-light);
+          --background-checked: var(--ion-color-primary);
+          --indicator-color: var(--ion-color-dark)
+        }
       }
     }
   }

@@ -55,4 +55,8 @@ export class ApiService {
     return this.httpClient.get(`${this.baseUrl}/pokemon-species/${name}`).pipe(
       map(poke => poke));
   }
+  getEvolutionDetails(url: string) {
+    return this.httpClient.get(url).pipe(
+      map(poke => poke));
+  }
 }

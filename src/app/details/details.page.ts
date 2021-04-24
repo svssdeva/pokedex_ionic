@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../services/api-service/api-service.service';
 import {NavController} from '@ionic/angular';
@@ -9,7 +9,7 @@ import {GlobalService} from '../services/global-service/global-service.service';
   templateUrl: './details.page.html',
   styleUrls: ['./details.page.scss'],
 })
-export class DetailsPage implements OnInit {
+export class DetailsPage implements OnInit, OnDestroy {
   index: number;
   name: string;
   pokemon: PokemonDetailModal;
@@ -22,12 +22,18 @@ export class DetailsPage implements OnInit {
       disableOnInteraction: false
     }
   };
+  speciesDetails: SpeciesModal;
+  activeSegment: string;
+  evolutionChain: ChainModal;
   constructor(private activatedRoute: ActivatedRoute,
               private apiService: ApiService,
               private navController: NavController,
               private globalService: GlobalService) {
     this.pokemon = new PokemonDetailModal({});
+    this.speciesDetails = new SpeciesModal({});
+    this.evolutionChain = new ChainModal({});
     this.activeType = '';
+    this.activeSegment = 'stats';
   }
 
   ngOnInit() {
@@ -38,24 +44,49 @@ export class DetailsPage implements OnInit {
       this.globalService.showMessage('toast', {message: `There was some issue with index`});
       this.navController.pop();
     } else {
-        this.fetchDetails();
-        this.getSpecies();
+      this.fetchDetails();
+      this.getSpecies();
     }
   }
+
+  ngOnDestroy() {
+    speechSynthesis.cancel();
+  }
+
   async getSpecies() {
     try {
       const res = await this.apiService.getSpecies(this.name).toPromise();
-      console.log(res);
+    //  console.log(res);
+      this.speciesDetails = new SpeciesModal(res);
+      await this.getEvolutionDetails(this.speciesDetails.evolutionChainUrl);
     } catch (e) {
       console.log(e);
     } finally {
+      console.log(this.speciesDetails);
+      if (this.speciesDetails.evolvesFrom.name.length > 0) {
+        this.speciesDetails.evolvesFrom.gifImage = `https://projectpokemon.org/images/normal-sprite/${this.speciesDetails.evolvesFrom.name}.gif`;
+      }
+    }
+  }
+  async getEvolutionDetails(url: string) {
+    if (url === '') {
+      return ;
+    }
+    try {
+      const res = await this.apiService.getEvolutionDetails(url).toPromise();
+      if (res && res['chain']) {
+        this.evolutionChain = new ChainModal(res['chain']);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      console.log(this.evolutionChain);
     }
   }
   async fetchDetails() {
     this.processing = true;
     try {
       const res = await this.apiService.getDetails(this.index).toPromise();
-      console.log(res);
       this.pokemon = new PokemonDetailModal(res);
       if (this.pokemon.types.length > 0) {
         this.setActiveType(this.pokemon.types[0].type.name);
@@ -67,12 +98,36 @@ export class DetailsPage implements OnInit {
       console.log(this.pokemon);
     }
   }
+
   setActiveType(name: string) {
     this.activeType = name;
   }
+
   toggleGif(event) {
     console.log(event);
     this.showGif = event.detail.checked;
+  }
+
+  changeSegment(event) {
+    this.activeSegment = event.detail.value;
+  }
+
+  returnDescription(flavorTextEntries: Array<FlavorTextEntries>) {
+    const details = flavorTextEntries.filter(item => item.language === 'en' && (item.version === 'emerald' || item.version === 'heartgold')).map(item => item.flavorText);
+    return [...new Set(details)].join(' ');
+  }
+
+  speakUp(data: string) {
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+      const message = new SpeechSynthesisUtterance(data);
+      message.rate = 1.5;
+      message.volume = 10;
+      message.lang = 'en-IN';
+      speechSynthesis.speak(message);
+    } else {
+      this.globalService.showMessage('toast', {message: `Speak Up not Supported by your device`});
+    }
   }
 }
 
@@ -93,6 +148,7 @@ export class PokemonDetailModal {
   };
   stats: Array<StatsModal> = [];
   moves: Array<MoveModal> = [];
+
   constructor(pokemon) {
     pokemon = pokemon || {};
     this.name = pokemon.name || '';
@@ -158,16 +214,19 @@ export class AbilityModal {
     name: string;
     url: string;
   };
+
   constructor(props) {
     props = props || {};
     this.ability = props.ability || {name: '', url: ''};
   }
 }
+
 export class TypesModal {
   type: {
     name: string;
     url: string;
   };
+
   constructor(props) {
     props = props || {};
     this.type = props.type || {name: '', url: ''};
@@ -181,6 +240,7 @@ export class StatsModal {
     name: string;
     url: string;
   };
+
   constructor(props) {
     props = props || {};
     this.baseStat = props.base_stat || 0;
@@ -188,13 +248,101 @@ export class StatsModal {
     this.stat = props.stat || {name: '', url: ''};
   }
 }
+
 export class MoveModal {
   move: {
     name: string;
     url: string;
   };
+
   constructor(props) {
     props = props || {};
     this.move = props.move || {name: '', url: ''};
+  }
+}
+
+export class SpeciesModal {
+  flavorTextEntries: Array<FlavorTextEntries> = [];
+  evolutionChainUrl: string;
+  evolvesFrom: {
+    name: string;
+    url: string;
+    gifImage: string;
+  };
+  isLegendary: boolean;
+  isMythical: boolean;
+  habitat: string;
+  baseHappiness: number;
+  captureRate: number;
+  id: number;
+  constructor(props) {
+    props = props || {};
+    if (props && props.flavor_text_entries && props.flavor_text_entries.length > 0) {
+      props.flavor_text_entries.forEach(item => {
+        this.flavorTextEntries.push(new FlavorTextEntries(item));
+      });
+    } else {
+      this.flavorTextEntries = [];
+    }
+    this.evolutionChainUrl = props?.evolution_chain?.url;
+    if (props && props.evolves_from_species) {
+      this.evolvesFrom = props.evolves_from_species || {name:'',  url: '', gifImage: ''};
+    } else {
+      this.evolvesFrom = {name:'',  url: '', gifImage: ''};
+    }
+    this.isLegendary = props?.is_legendary || false;
+    this.isMythical = props?.is_mythical || false;
+    this.habitat = props?.habitat?.name || '';
+    this.id = props?.id || 0;
+    this.baseHappiness = props?.base_happiness || 0;
+    this.captureRate = props?.capture_rate || 0;
+  }
+}
+
+class FlavorTextEntries {
+  flavorText: string;
+  language: string;
+  version: string;
+  constructor(props) {
+    props = props || {};
+    this.flavorText = props?.flavor_text || '';
+    this.language = props?.language?.name || '';
+    this.version = props?.version?.name || '';
+  }
+}
+
+class ChainModal {
+  evolutionDetails: Array<any> = [];
+  evolvesTo: Array<EvolveModal> = [];
+  species: {
+    name: string;
+    url: string;
+  };
+  constructor(props) {
+    props = props || {};
+    this.evolutionDetails = props?.evolution_details || [];
+    if (props && props.evolves_to && props.evolves_to.length > 0) {
+      props.evolves_to.forEach(item => {
+        this.evolvesTo.push(new EvolveModal(item));
+      });
+    }
+    this.species = props?.species || {name:'',  url: ''};
+  }
+}
+
+class EvolveModal {
+  evolvesTo: Array<EvolveModal> = [];
+  species: {
+    name: string;
+    url: string;
+  };
+  constructor(props) {
+    props = props || {};
+    if (props && props.evolves_to && props.evolves_to.length > 0) {
+      props.evolves_to.forEach(item => {
+        this.evolvesTo.push(new EvolveModal(item));
+      });
+    }
+    this.species = props?.species || {name:'',  url: ''};
   }
 }

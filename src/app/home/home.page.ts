@@ -29,7 +29,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.type = 'pokemon';
    this.networkSubscription = this.globalService.getNetworkConnectionValue().subscribe(res => {
       this.isNetworkConnected = res;
-      console.log(this.isNetworkConnected);
+     // console.log(this.isNetworkConnected);
       if (this.isNetworkConnected === false) {
         this.openNetworkAlertModal();
       }
@@ -67,7 +67,7 @@ export class HomePage implements OnInit, OnDestroy {
       console.log(e);
     } finally {
       this.processing = false;
-      console.log(this.pokemons);
+     // console.log(this.pokemons);
     }
   }
   loadMore(event) {
