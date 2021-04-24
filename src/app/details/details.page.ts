@@ -56,13 +56,11 @@ export class DetailsPage implements OnInit, OnDestroy {
   async getSpecies() {
     try {
       const res = await this.apiService.getSpecies(this.name).toPromise();
-    //  console.log(res);
       this.speciesDetails = new SpeciesModal(res);
       await this.getEvolutionDetails(this.speciesDetails.evolutionChainUrl);
     } catch (e) {
       console.log(e);
     } finally {
-      console.log(this.speciesDetails);
       if (this.speciesDetails.evolvesFrom.name.length > 0) {
         this.speciesDetails.evolvesFrom.gifImage = `https://projectpokemon.org/images/normal-sprite/${this.speciesDetails.evolvesFrom.name}.gif`;
       }
@@ -80,7 +78,6 @@ export class DetailsPage implements OnInit, OnDestroy {
     } catch (e) {
       console.log(e);
     } finally {
-      console.log(this.evolutionChain);
     }
   }
   async fetchDetails() {
@@ -95,7 +92,6 @@ export class DetailsPage implements OnInit, OnDestroy {
       console.log(e);
     } finally {
       this.processing = false;
-      console.log(this.pokemon);
     }
   }
 
@@ -104,7 +100,7 @@ export class DetailsPage implements OnInit, OnDestroy {
   }
 
   toggleGif(event) {
-    console.log(event);
+
     this.showGif = event.detail.checked;
   }
 

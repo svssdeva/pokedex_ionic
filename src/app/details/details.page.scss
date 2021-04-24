@@ -133,3 +133,11 @@ ion-content {
   --background: var(--ion-color-ice);
   background: var(--ion-color-ice);
 }
+.dark-bg {
+  --background: var(--ion-color-darkpoke);
+  background: var(--ion-color-darkpoke);
+}
+.ghost-bg {
+  --background: var(--ion-color-ghost);
+  background: var(--ion-color-ghost);
+}

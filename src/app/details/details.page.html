@@ -86,9 +86,9 @@
             <section class="ion-margin-top evolve_section" [hidden]="speciesDetails?.evolvesFrom?.name === ''">
               <ion-title color="dark">Evolves From :  {{speciesDetails?.evolvesFrom?.name || ''}}</ion-title>
               <ion-img [src]="speciesDetails?.evolvesFrom?.gifImage || ''"></ion-img>
-              <br [hidden]="evolutionChain?.evolvesTo[0]?.evolvesTo.length === 0">
-              <ion-title [hidden]="evolutionChain?.evolvesTo[0]?.evolvesTo.length === 0" color="dark">Evolves To :  {{evolutionChain?.evolvesTo[0]?.evolvesTo[0]?.species.name || ''}}</ion-title>
-              <ion-img [hidden]="evolutionChain?.evolvesTo[0]?.evolvesTo.length === 0" [src]="'https://projectpokemon.org/images/normal-sprite/' + evolutionChain?.evolvesTo[0]?.evolvesTo[0]?.species.name + '.gif' || ''"></ion-img>
+             <!-- <br [hidden]="evolutionChain?.evolvesTo.length === 0">
+              <ion-title [hidden]="evolutionChain?.evolvesTo.length === 0 " color="dark">Evolves To :  {{evolutionChain?.evolvesTo[0]?.species?.name || ''}}</ion-title>
+              <ion-img [hidden]="evolutionChain?.evolvesTo.length === 0 " [src]="'https://projectpokemon.org/images/normal-sprite/' + evolutionChain?.evolvesTo[0]?.species?.name + '.gif' || ''"></ion-img>-->
             </section>
           </ion-card-content>
         </ion-card>
