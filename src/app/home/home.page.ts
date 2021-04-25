@@ -2,9 +2,13 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ApiService} from '../services/api-service/api-service.service';
 import {Router} from '@angular/router';
 import {GlobalService} from '../services/global-service/global-service.service';
-import {Subscription} from "rxjs";
-import {ModalController} from "@ionic/angular";
-import {NetworkAlertModalComponent} from "./network-alert-modal/network-alert-modal.component";
+import {Subscription} from 'rxjs';
+import {LoadingController, ModalController} from '@ionic/angular';
+import {NetworkAlertModalComponent} from './network-alert-modal/network-alert-modal.component';
+import {SearchDetailsModalComponent} from './search-details-modal/search-details-modal.component';
+import {PokemonDetailModal} from '../details/details.page';
+import {StorageService} from "../services/storage/storage.service";
+import {endWith} from "rxjs/operators";
 
 @Component({
   selector: 'app-home',
@@ -20,16 +24,19 @@ export class HomePage implements OnInit, OnDestroy {
   canPaginate: boolean;
   isNetworkConnected: boolean;
   networkSubscription: Subscription;
+  cacheIndex = 0;
   constructor(private apiService: ApiService,
               private router: Router,
               private globalService: GlobalService,
-              private modalController: ModalController) {
+              private modalController: ModalController,
+              private loadingController: LoadingController,
+              private storageService: StorageService) {
     this.offset = 0;
     this.limit = 20;
     this.type = 'pokemon';
    this.networkSubscription = this.globalService.getNetworkConnectionValue().subscribe(res => {
       this.isNetworkConnected = res;
-     // console.log(this.isNetworkConnected);
+      console.log(this.isNetworkConnected);
       if (this.isNetworkConnected === false) {
         this.openNetworkAlertModal();
       }
@@ -37,8 +44,18 @@ export class HomePage implements OnInit, OnDestroy {
   }
   async ngOnInit() {
     this.canPaginate = true;
-    await this.getPokemons();
-
+    if (this.isNetworkConnected === true) {
+      await this.getPokemons();
+    } else {
+      this.processing = true;
+      const lastCachedIndex = await this.storageService.getItem('lastCachedIndex');
+      for(let i = this.cacheIndex; i < +lastCachedIndex; i++) {
+        const data = await this.storageService.getItem(JSON.stringify(i));
+        this.pokemons = [...this.pokemons, ...JSON.parse(data)];
+      }
+      this.processing = false;
+      this.offset = this.pokemons.length - this.limit;
+    }
   }
   async ngOnDestroy() {
     if (this.networkSubscription) {
@@ -48,13 +65,13 @@ export class HomePage implements OnInit, OnDestroy {
   async getPokemons() {
     if (this.isNetworkConnected === false) {
       await this.globalService.showMessage('toast', {message: `Pokedex can't fetch data while offline...`});
-      return ;
+      return;
     }
     if (this.offset === 0) {
       this.processing = true;
     }
+    const items: Array<PokemonListModal> = [];
     try {
-      const items: Array<PokemonListModal> = [];
       const res = await this.apiService.getPokemons(this.offset, this.limit, this.type).toPromise();
       if (res.length < 20) {
         this.canPaginate = false;
@@ -67,13 +84,15 @@ export class HomePage implements OnInit, OnDestroy {
       console.log(e);
     } finally {
       this.processing = false;
-     // console.log(this.pokemons);
+      await this.storageService.setItem(JSON.stringify(this.cacheIndex), JSON.stringify(items));
+      await this.storageService.setItem('lastCachedIndex', JSON.stringify(this.cacheIndex));
     }
   }
   loadMore(event) {
     if (event) {
       event.target.complete();
       if (this.canPaginate === true) {
+        this.cacheIndex++;
         this.offset = this.offset + this.limit;
         this.getPokemons();
       } else {
@@ -82,7 +101,11 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
   async goToDetails(pokemon: PokemonListModal) {
-    await this.router.navigate([`home/${pokemon.index}/details`, {name: pokemon.name}]);
+   if (this.isNetworkConnected === true) {
+     await this.router.navigate([`home/${pokemon.index}/details`, {name: pokemon.name}]);
+   } else {
+     await this.globalService.showMessage('toast', {message: `Can't find details. Please connect to internet first`});
+   }
   }
 
   async searchPokemon(event) {
@@ -90,23 +113,45 @@ export class HomePage implements OnInit, OnDestroy {
     if (value === '') {
       await this.globalService.showMessage('toast', {message: `Please enter a name!!!`});
     } else {
+      console.log(event);
+      event.target.disabled = true;
       try {
         const res = await this.apiService.findPokemon(value).toPromise();
-        const pokemon = new PokemonListModal(res);
+        const pokemon = new PokemonDetailModal(res);
+        if (pokemon?.name?.length > 0) {
+          await this.openSearchedPokemonModal(pokemon , event);
+        }
       } catch (e) {
-      console.log(e);
-      } finally {
-
+        event.target.disabled = false;
+        if (e && e?.error === 'Not Found') {
+          await this.globalService.showMessage('alert', {message: `No Pokemon Found...`});
+        }
       }
+    }
+  }
+  async openSearchedPokemonModal(pokemon: PokemonDetailModal, event) {
+    const modal = await this.modalController.create({
+      component: SearchDetailsModalComponent,
+      cssClass: 'search-modal',
+      backdropDismiss: false,
+      componentProps: {pokemon}
+    });
+    await modal.present();
+    const { role ,data } = await modal.onDidDismiss();
+
+    event.target.disabled = false;
+    if (data && data?.data === 'showMore') {
+      await this.router.navigate([`home/${pokemon.id}/details`, {name: pokemon.name}]);
     }
   }
   async openNetworkAlertModal() {
     const modal = await this.modalController.create({
       component: NetworkAlertModalComponent,
-      cssClass: 'network-modal',
+      cssClass: 'network-modal'
     });
     await modal.present();
     const { role ,data } = await modal.onDidDismiss();
+    console.log(role, data);
   }
 }
 

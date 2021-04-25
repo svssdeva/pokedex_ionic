@@ -117,9 +117,9 @@ export class DetailsPage implements OnInit, OnDestroy {
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
       const message = new SpeechSynthesisUtterance(data);
-      message.rate = 1.5;
+      message.rate = 1.3;
       message.volume = 10;
-      message.lang = 'en-IN';
+      message.lang = 'en-UK';
       speechSynthesis.speak(message);
     } else {
       this.globalService.showMessage('toast', {message: `Speak Up not Supported by your device`});

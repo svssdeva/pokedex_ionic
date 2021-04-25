@@ -8,6 +8,7 @@
 </ion-header>
 
 <ion-content>
+  <ion-searchbar [hidden]="isNetworkConnected === false" showCancelButton (ionChange)="searchPokemon($event)" showClearButton  mode="ios" debounce="1000" animated placeholder="Enter Name of Pokemon Here ..."></ion-searchbar>
   <ion-grid>
     <ion-row *ngIf="processing === false && pokemons.length > 0">
       <ion-col size="12" *ngFor="let pokemon of pokemons">

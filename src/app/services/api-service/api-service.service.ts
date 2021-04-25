@@ -16,7 +16,8 @@ export class ApiService {
   }
 
   getPokemons(offset = 0, limit = 20, type = 'pokemon') {
-    return this.httpClient.get(`${this.baseUrl}/${type}?offset=${offset}&limit=${limit}`).pipe(
+    const url = `${this.baseUrl}/${type}?offset=${offset}&limit=${limit}`;
+    return this.httpClient.get(url).pipe(
       map(res => res['results']),
       map(pokemons => pokemons.map((poke, index) => {
         poke.index = offset + index + 1;

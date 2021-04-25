@@ -1,0 +1,21 @@
+<ion-content class="{{pokemon?.types[0]?.type?.name}}-bg">
+
+  <section>
+    <ion-row>
+      <ion-col size="12" class="vertical-align ion-justify-content-end ion-padding">
+        <ion-icon class="ion-float-right" name="close" color="dark" (click)="dismiss()"></ion-icon>
+      </ion-col>
+      <ion-col size="12" class="vertical-align">
+        <ion-img style="height: 100px" [src]="pokemon.gifImage"></ion-img>
+      </ion-col>
+      <ion-col size="12">
+        <ion-title color="dark">#{{pokemon.id}} {{pokemon.name}}</ion-title>
+      </ion-col>
+    </ion-row>
+  </section>
+</ion-content>
+<ion-footer>
+  <ion-toolbar class="{{pokemon?.types[0]?.type?.name}}-bg">
+    <ion-button color="dark" size="block" shape="round" (click)="dismiss({data: 'showMore'})">Check More Details</ion-button>
+  </ion-toolbar>
+</ion-footer>
