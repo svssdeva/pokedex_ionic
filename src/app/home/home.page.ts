@@ -7,8 +7,8 @@ import {LoadingController, ModalController} from '@ionic/angular';
 import {NetworkAlertModalComponent} from './network-alert-modal/network-alert-modal.component';
 import {SearchDetailsModalComponent} from './search-details-modal/search-details-modal.component';
 import {PokemonDetailModal} from '../details/details.page';
-import {StorageService} from "../services/storage/storage.service";
-import {endWith} from "rxjs/operators";
+import {StorageService} from '../services/storage/storage.service';
+
 
 @Component({
   selector: 'app-home',
@@ -111,9 +111,8 @@ export class HomePage implements OnInit, OnDestroy {
   async searchPokemon(event) {
     const value = event.target.value.trim();
     if (value === '') {
-      await this.globalService.showMessage('toast', {message: `Please enter a name!!!`});
+      await this.globalService.showMessage('toast', {message: `Please enter a name/id!!!`});
     } else {
-      console.log(event);
       event.target.disabled = true;
       try {
         const res = await this.apiService.findPokemon(value).toPromise();
@@ -124,7 +123,7 @@ export class HomePage implements OnInit, OnDestroy {
       } catch (e) {
         event.target.disabled = false;
         if (e && e?.error === 'Not Found') {
-          await this.globalService.showMessage('alert', {message: `No Pokemon Found...`});
+          await this.globalService.showMessage('alert', {message: `No Pokemon Found. Try something else ...`});
         }
       }
     }

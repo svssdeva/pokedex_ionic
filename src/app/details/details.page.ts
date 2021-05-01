@@ -1,9 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../services/api-service/api-service.service';
-import {NavController} from '@ionic/angular';
+import {NavController, Platform} from '@ionic/angular';
 import {GlobalService} from '../services/global-service/global-service.service';
-
+import { Plugins } from '@capacitor/core';
+import {HapticsService} from '../services/haptics/haptics.service';
+const { Share } = Plugins;
 @Component({
   selector: 'app-details',
   templateUrl: './details.page.html',
@@ -28,7 +30,9 @@ export class DetailsPage implements OnInit, OnDestroy {
   constructor(private activatedRoute: ActivatedRoute,
               private apiService: ApiService,
               private navController: NavController,
-              private globalService: GlobalService) {
+              private globalService: GlobalService,
+              private hapticService: HapticsService,
+              private platform: Platform) {
     this.pokemon = new PokemonDetailModal({});
     this.speciesDetails = new SpeciesModal({});
     this.evolutionChain = new ChainModal({});
@@ -57,7 +61,9 @@ export class DetailsPage implements OnInit, OnDestroy {
     try {
       const res = await this.apiService.getSpecies(this.name).toPromise();
       this.speciesDetails = new SpeciesModal(res);
-      await this.getEvolutionDetails(this.speciesDetails.evolutionChainUrl);
+      if (this.speciesDetails.evolvesFrom.name.length > 0) {
+        await this.getEvolutionDetails(this.speciesDetails.evolutionChainUrl);
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -109,21 +115,37 @@ export class DetailsPage implements OnInit, OnDestroy {
   }
 
   returnDescription(flavorTextEntries: Array<FlavorTextEntries>) {
-    const details = flavorTextEntries.filter(item => item.language === 'en' && (item.version === 'emerald' || item.version === 'heartgold')).map(item => item.flavorText);
+    const details = flavorTextEntries.filter(item => item.language === 'en' && (item.version === 'emerald' || item.version === 'heartgold' || item.version === 'sword' || item.version === 'aplha-sapphire')).map(item => item.flavorText);
     return [...new Set(details)].join(' ');
   }
 
   speakUp(data: string) {
     if ('speechSynthesis' in window) {
+      if (this.platform.is('hybrid')) {
+        this.hapticService.hapticImpactLight();
+      }
       speechSynthesis.cancel();
-      const message = new SpeechSynthesisUtterance(data);
-      message.rate = 1.3;
+    const message = new SpeechSynthesisUtterance(data);
       message.volume = 10;
       message.lang = 'en-UK';
       speechSynthesis.speak(message);
     } else {
+      if (this.platform.is('hybrid')) {
+        this.hapticService.hapticImpactMedium();
+      }
       this.globalService.showMessage('toast', {message: `Speak Up not Supported by your device`});
     }
+  }
+  async sharePokemon() {
+    if (this.platform.is('hybrid')) {
+      this.hapticService.hapticImpactMedium();
+    }
+    await Share.share({
+      title: this.pokemon.name,
+      text: `Check out this pokemon.`,
+      url: 'http://ionicframework.com/',
+      dialogTitle: 'Share with fellow trainers...'
+    });
   }
 }
 
@@ -271,6 +293,9 @@ export class SpeciesModal {
   baseHappiness: number;
   captureRate: number;
   id: number;
+  generation: NameUrlModal;
+  growthRate: NameUrlModal;
+  shape: NameUrlModal;
   constructor(props) {
     props = props || {};
     if (props && props.flavor_text_entries && props.flavor_text_entries.length > 0) {
@@ -292,6 +317,9 @@ export class SpeciesModal {
     this.id = props?.id || 0;
     this.baseHappiness = props?.base_happiness || 0;
     this.captureRate = props?.capture_rate || 0;
+    this.generation = new NameUrlModal(props?.generation) || {name: '', url: ''};
+    this.growthRate = new NameUrlModal(props?.growth_rate) || new NameUrlModal({});
+    this.shape = new NameUrlModal(props?.shape) || new NameUrlModal({});
   }
 }
 
@@ -310,10 +338,7 @@ class FlavorTextEntries {
 class ChainModal {
   evolutionDetails: Array<any> = [];
   evolvesTo: Array<EvolveModal> = [];
-  species: {
-    name: string;
-    url: string;
-  };
+  species: NameUrlModal;
   constructor(props) {
     props = props || {};
     this.evolutionDetails = props?.evolution_details || [];
@@ -322,16 +347,13 @@ class ChainModal {
         this.evolvesTo.push(new EvolveModal(item));
       });
     }
-    this.species = props?.species || {name:'',  url: ''};
+    this.species = new NameUrlModal(props?.species) || {name:'',  url: ''};
   }
 }
 
 class EvolveModal {
   evolvesTo: Array<EvolveModal> = [];
-  species: {
-    name: string;
-    url: string;
-  };
+  species: NameUrlModal;
   constructor(props) {
     props = props || {};
     if (props && props.evolves_to && props.evolves_to.length > 0) {
@@ -339,6 +361,16 @@ class EvolveModal {
         this.evolvesTo.push(new EvolveModal(item));
       });
     }
-    this.species = props?.species || {name:'',  url: ''};
+    this.species = new NameUrlModal(props?.species) || {name:'',  url: ''};
+  }
+}
+
+class NameUrlModal {
+  name: string;
+  url: string;
+  constructor(props) {
+    props = props || {};
+    this.name = props.name || '';
+    this.url = props.url || '';
   }
 }

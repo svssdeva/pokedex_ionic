@@ -1,7 +1,12 @@
 import {Component, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {MenuController, Platform} from '@ionic/angular';
 import {GlobalService} from './services/global-service/global-service.service';
+import {
+  Plugins,
+  StatusBarStyle,
+} from '@capacitor/core';
 
+const { StatusBar } = Plugins;
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -16,13 +21,18 @@ export class AppComponent implements OnInit, OnDestroy {
     this.appVersion = this.globalService.appVersion || 1;
     this.platform.ready().then(() => {
       this.globalService.getNetWorkStatus();
+      if (this.platform.is('hybrid')) {
+        this.hideStatusBar();
+      }
     });
   }
 
   ngOnInit() {
-
   }
   async ngOnDestroy() {
+   if (this.platform.is('hybrid')) {
+     this.showStatusBar();
+   }
     this.globalService.removeNetworkListeners();
   }
   onClick(event) {
@@ -39,5 +49,12 @@ export class AppComponent implements OnInit, OnDestroy {
     } else {
       document.body.setAttribute('data-theme', 'light');
     }
+  }
+  hideStatusBar() {
+    StatusBar.hide();
+  }
+
+  showStatusBar() {
+    StatusBar.show();
   }
 }

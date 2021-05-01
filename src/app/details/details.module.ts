@@ -9,6 +9,7 @@ import { DetailsPageRoutingModule } from './details-routing.module';
 import { DetailsPage } from './details.page';
 import {ApiService} from '../services/api-service/api-service.service';
 import { SafePipeModule } from 'safe-pipe';
+import {HapticsService} from "../services/haptics/haptics.service";
 
 @NgModule({
   imports: [
@@ -19,6 +20,6 @@ import { SafePipeModule } from 'safe-pipe';
     SafePipeModule,
   ],
   declarations: [DetailsPage],
-  providers: [ApiService]
+  providers: [ApiService, HapticsService]
 })
 export class DetailsPageModule {}

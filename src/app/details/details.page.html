@@ -1,8 +1,11 @@
 <ion-header class="ion-no-border">
   <ion-toolbar class="{{activeType}}-bg">
   <ion-buttons slot="start">
-    <ion-back-button color="dark"></ion-back-button>
+    <ion-back-button></ion-back-button>
   </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-icon name="share-social-outline" (click)="sharePokemon()"></ion-icon>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -79,7 +82,10 @@
                <ion-icon name="mic-circle-outline" color="dark" class="ion-tappable" (click)="speakUp(returnDescription(speciesDetails.flavorTextEntries))"></ion-icon>
                <ion-card-title class="ion-text-justify description_text" [innerHTML]="returnDescription(speciesDetails.flavorTextEntries) | safe: 'html'"></ion-card-title>
                <br>
-               <ion-card-subtitle >Habitat : {{speciesDetails.habitat}}</ion-card-subtitle>
+               <ion-card-subtitle [hidden]="speciesDetails.habitat.length === 0">Habitat : {{speciesDetails.habitat}}</ion-card-subtitle>
+               <ion-card-subtitle >Growth Rate : {{speciesDetails.growthRate.name}}</ion-card-subtitle>
+               <ion-card-subtitle >Shape : {{speciesDetails.shape.name}}</ion-card-subtitle>
+               <ion-card-subtitle >Generation : {{speciesDetails.generation.name}}</ion-card-subtitle>
                <ion-card-subtitle>Legendary: {{speciesDetails.isLegendary === true ? 'Yes' : 'No'}}</ion-card-subtitle>
                <ion-card-subtitle>Mythical: {{speciesDetails.isMythical === true ? 'Yes' : 'No'}}</ion-card-subtitle>
              </section>
