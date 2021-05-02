@@ -60,4 +60,12 @@ export class ApiService {
     return this.httpClient.get(url).pipe(
       map(poke => poke));
   }
+  getMove(url: string) {
+    return this.httpClient.get(url).pipe(
+      map(move => move));
+  }
+  getAbility(url: string) {
+    return this.httpClient.get(url).pipe(
+      map(ability => ability));
+  }
 }

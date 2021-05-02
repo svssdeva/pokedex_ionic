@@ -54,7 +54,9 @@ export class DetailsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    speechSynthesis.cancel();
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
   }
 
   async getSpecies() {
@@ -118,7 +120,18 @@ export class DetailsPage implements OnInit, OnDestroy {
     const details = flavorTextEntries.filter(item => item.language === 'en' && (item.version === 'emerald' || item.version === 'heartgold' || item.version === 'sword' || item.version === 'aplha-sapphire')).map(item => item.flavorText);
     return [...new Set(details)].join(' ');
   }
-
+  returnAbilityDescription(flavorTextEntries: Array<FlavorTextEntries>) {
+    const details = flavorTextEntries.filter(item => item.language === 'en' && (item.version === 'sword' || item.version === 'ultra-sun-ultra-moon')).map(item => item.flavorText);
+    return [...new Set(details)].join(' ');
+  }
+  returnEffectDescription(effectEntry: Array<EffectEntryModal>) {
+    const details = effectEntry.filter(item => item.language.name === 'en').map(item => item.effect);
+    return [...new Set(details)].join(' ');
+  }
+  returnMoveEffectDescription(effectEntry: Array<EffectEntryModal>, effectChance: number) {
+    const details = effectEntry.filter(item => item.language.name === 'en').map(item => item.effect);
+    return [...new Set(details)].join(' ').replace('$effect_chance%', JSON.stringify(effectChance) + '%');
+  }
   speakUp(data: string) {
     if ('speechSynthesis' in window) {
       if (this.platform.is('hybrid')) {
@@ -146,6 +159,46 @@ export class DetailsPage implements OnInit, OnDestroy {
       url: 'http://ionicframework.com/',
       dialogTitle: 'Share with fellow trainers...'
     });
+  }
+  async showMoves(move: MoveModal) {
+    move.show = !move.show;
+    if (move.show === true) {
+      if (move.moveDetail) {
+        await this.openMove(move);
+      }
+    }
+  }
+  async openMove(move: MoveModal) {
+    move.processing = true;
+    try {
+      const res = await this.apiService.getMove(move.move.url).toPromise();
+      move.moveDetail = new MoveDetailModal(res);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      move.processing = false;
+      console.log(move);
+    }
+  }
+ async showAbility(ability: AbilityModal) {
+    ability.show = !ability.show;
+    if (ability.show === true) {
+      if (ability.abilityDetail.effectEntries.length === 0 && ability.abilityDetail.flavorTextEntries.length === 0) {
+       await this.openAbility(ability);
+      }
+    }
+  }
+  async openAbility(ability: AbilityModal) {
+    ability.processing = true;
+    try {
+      const res = await this.apiService.getAbility(ability.ability.url).toPromise();
+      const abilityDetail = new AbilityDetailModal(res);
+      ability.abilityDetail = {...abilityDetail};
+    } catch (e) {
+      console.log(e);
+    } finally {
+      ability.processing = false;
+    }
   }
 }
 
@@ -228,54 +281,52 @@ export class PokemonDetailModal {
 }
 
 export class AbilityModal {
-  ability: {
-    name: string;
-    url: string;
-  };
-
+  ability: NameUrlModal;
+  show: boolean;
+  processing: boolean;
+  abilityDetail: AbilityDetailModal;
   constructor(props) {
     props = props || {};
-    this.ability = props.ability || {name: '', url: ''};
+    this.ability = new NameUrlModal(props.ability) || {name: '', url: ''};
+    this.show = false;
+    this.processing  = true;
+    this.abilityDetail = new AbilityDetailModal({});
   }
 }
 
 export class TypesModal {
-  type: {
-    name: string;
-    url: string;
-  };
+  type: NameUrlModal;
 
   constructor(props) {
     props = props || {};
-    this.type = props.type || {name: '', url: ''};
+    this.type = new NameUrlModal(props.type) || {name: '', url: ''};
   }
 }
 
 export class StatsModal {
   baseStat: number;
   effort: number;
-  stat: {
-    name: string;
-    url: string;
-  };
+  stat: NameUrlModal;
 
   constructor(props) {
     props = props || {};
     this.baseStat = props.base_stat || 0;
     this.effort = props.effort || 0;
-    this.stat = props.stat || {name: '', url: ''};
+    this.stat = new NameUrlModal(props.stat) || {name: '', url: ''};
   }
 }
 
 export class MoveModal {
-  move: {
-    name: string;
-    url: string;
-  };
-
+  move: NameUrlModal;
+  show: boolean;
+  processing: boolean;
+  moveDetail: MoveDetailModal;
   constructor(props) {
     props = props || {};
-    this.move = props.move || {name: '', url: ''};
+    this.move = new NameUrlModal(props.move) || {name: '', url: ''};
+    this.show = false;
+    this.processing  = true;
+    this.moveDetail = new MoveDetailModal({});
   }
 }
 
@@ -331,7 +382,7 @@ class FlavorTextEntries {
     props = props || {};
     this.flavorText = props?.flavor_text || '';
     this.language = props?.language?.name || '';
-    this.version = props?.version?.name || '';
+    this.version = props?.version?.name ||  props?.version_group?.name || '';
   }
 }
 
@@ -372,5 +423,69 @@ class NameUrlModal {
     props = props || {};
     this.name = props.name || '';
     this.url = props.url || '';
+  }
+}
+
+
+export class AbilityDetailModal {
+  effectEntries: Array<EffectEntryModal> = [];
+  flavorTextEntries: Array<FlavorTextEntries> = [];
+  constructor(props) {
+    props = props || {};
+    if (props?.effect_entries?.length > 0) {
+      props.effect_entries.forEach(item => {
+        this.effectEntries.push(new EffectEntryModal(item));
+      });
+    }
+    if (props && props.flavor_text_entries && props.flavor_text_entries.length > 0) {
+      props.flavor_text_entries.forEach(item => {
+        this.flavorTextEntries.push(new FlavorTextEntries(item));
+      });
+    } else {
+      this.flavorTextEntries = [];
+    }
+  }
+}
+export class EffectEntryModal {
+  effect: string;
+  shortEffect: string;
+  language: NameUrlModal;
+  constructor(props) {
+    props = props || {};
+    this.effect = props.effect || '';
+    this.shortEffect = props.short_effect || '';
+    this.language = new NameUrlModal(props.language) || new NameUrlModal({});
+  }
+}
+
+
+
+export class MoveDetailModal {
+  accuracy: number;
+  power: number;
+  pp: number;
+  priority: number;
+  type: string;
+  effectChance: number;
+  effectEntries: Array<EffectEntryModal> = [];
+  flavorTextEntries: Array<FlavorTextEntries> = [];
+  constructor(props) {
+    props = props || {};
+    this.accuracy = props.accuracy || 0;
+    this.power = props.power || 0;
+    this.pp = props.pp || 0;
+    this.priority = props.priority || 0;
+    this.effectChance = props.effect_chance || 0;
+    this.type = props?.type?.name || '';
+    if (props?.effect_entries?.length > 0) {
+      props.effect_entries.forEach(item => {
+        this.effectEntries.push(new EffectEntryModal(item));
+      });
+    }
+    if (props && props.flavor_text_entries && props.flavor_text_entries.length > 0) {
+      props.flavor_text_entries.forEach(item => {
+        this.flavorTextEntries.push(new FlavorTextEntries(item));
+      });
+    }
   }
 }

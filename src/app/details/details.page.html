@@ -9,7 +9,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="{{activeType}}-bg">
   <section class="details_section" *ngIf="processing === false && pokemon?.name?.length > 0">
     <!--<ion-item lines="none">
       <ion-label slot="start" color="medium">Toggle Gif Image</ion-label>
@@ -27,11 +27,12 @@
         <img style="height: 100px" [src]="pokemon?.gifImage || ''">
       </ion-col>
       <ion-col size="12" >
-        <ion-card class="details_card {{activeType}}-bg">
+        <ion-card class="details_card ">
           <ion-card-header>
-            <ion-card-title color="dark">#{{pokemon.id}} {{pokemon.name}}</ion-card-title>
+            <ion-card-title >#{{pokemon.id}} {{pokemon.name}}</ion-card-title>
             <ion-chip *ngFor="let type of pokemon.types" class="{{type.type.name}}-bg" (click)="setActiveType(type.type.name)">
-                <ion-label color="dark">{{type.type.name}}</ion-label>
+                <ion-label>{{type.type.name}}</ion-label>
+              <ion-img class="type_img" [src]="'assets/types/' + type.type.name + '.webp'"></ion-img>
             </ion-chip>
           </ion-card-header>
           <ion-card-content class="vertical-align">
@@ -48,40 +49,22 @@
           </ion-segment>
           <ion-card-content [hidden]="activeSegment === 'details'">
 
-            <ion-list class="stat_list">
-              <ion-item lines="full" *ngFor="let stat of pokemon.stats">
+            <ion-list class="stat_list ">
+              <ion-item lines="full" *ngFor="let stat of pokemon.stats; let i = index" class="animate__animated animate__slideInLeft animate__delay-{{i}}s">
                 <ion-label class="stat" slot="start">{{stat.stat.name}} : </ion-label>
                 <ion-label class="value" slot="end">{{stat.baseStat}}</ion-label>
               </ion-item>
-              <ion-item lines="full">
-                <ion-label class="stat" slot="start">Height : </ion-label>
-                <ion-label class="value" slot="end">{{pokemon.height}}</ion-label>
-              </ion-item>
-              <ion-item lines="full">
-                <ion-label class="stat" slot="start">Weight : </ion-label>
-                <ion-label class="value" slot="end">{{pokemon.weight}}</ion-label>
-              </ion-item>
+
             </ion-list>
-            <ion-list lines="full">
-              <ion-item>
-                <ion-label class="ion-text-wrap"><b>Abilities: </b> <span *ngFor="let ability of pokemon.abilities; let isLast = last" class="ion-text-capitalize">
-                    {{ability.ability.name}}{{!isLast ? ',' : ''}}
-                  </span></ion-label>
-              </ion-item>
-            </ion-list>
-            <ion-list lines="full">
-              <ion-item>
-                <ion-label class="ion-text-wrap"><b>Moves: </b> <span *ngFor="let move of pokemon.moves; let isLast = last" class="ion-text-capitalize">
-                    {{move.move.name}}{{!isLast ? ',' : ''}}
-                  </span></ion-label>
-              </ion-item>
-            </ion-list>
+
           </ion-card-content>
           <ion-card-content class="details_card_content" [hidden]="activeSegment === 'stats'">
              <section>
-               <ion-icon name="mic-circle-outline" color="dark" class="ion-tappable" (click)="speakUp(returnDescription(speciesDetails.flavorTextEntries))"></ion-icon>
+               <ion-icon name="mic-circle-outline"  class="ion-tappable" (click)="speakUp(returnDescription(speciesDetails.flavorTextEntries))"></ion-icon>
                <ion-card-title class="ion-text-justify description_text" [innerHTML]="returnDescription(speciesDetails.flavorTextEntries) | safe: 'html'"></ion-card-title>
                <br>
+               <ion-card-subtitle>Height: {{pokemon.height}}</ion-card-subtitle>
+               <ion-card-subtitle>Weight: {{pokemon.weight}}</ion-card-subtitle>
                <ion-card-subtitle [hidden]="speciesDetails.habitat.length === 0">Habitat : {{speciesDetails.habitat}}</ion-card-subtitle>
                <ion-card-subtitle >Growth Rate : {{speciesDetails.growthRate.name}}</ion-card-subtitle>
                <ion-card-subtitle >Shape : {{speciesDetails.shape.name}}</ion-card-subtitle>
@@ -98,6 +81,85 @@
             </section>
           </ion-card-content>
         </ion-card>
+        <ion-card class="abilities_card" [hidden]="pokemon.abilities.length === 0">
+          <ion-card-header>
+            <ion-card-title>Abilities</ion-card-title>
+          </ion-card-header>
+          <ion-card-content *ngFor="let ability of pokemon.abilities" >
+            <ion-item (click)="showAbility(ability)" lines="full">
+              <ion-label slot="start" class="ion-text-capitalize">{{ability.ability.name}}</ion-label>
+              <ion-icon slot="end" class="ion-tappable"  [name]="ability.show === true? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            </ion-item>
+            <ion-item lines="none" class="ability_details animate__animated animate__delay-1s animate__flipInX" [hidden]="ability.show === false" >
+              <ion-row>
+                <ion-col size="12" class="vertical-align" *ngIf="ability.processing === true">
+                  <ion-img src="assets/loader_4.gif"></ion-img>
+                </ion-col>
+                <ion-col size="12" *ngIf="ability.processing === false">
+                  <ion-text><b>Description</b> :
+                    <ion-note>{{returnAbilityDescription(ability.abilityDetail.flavorTextEntries)}}</ion-note>
+                  </ion-text>
+                </ion-col>
+                <ion-col size="12" *ngIf="ability.processing === false">
+                  <ion-text><b>Effect</b> :
+                    <ion-note>{{returnEffectDescription(ability.abilityDetail.effectEntries)}}</ion-note>
+                  </ion-text>
+                </ion-col>
+              </ion-row>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+        <ion-card class="moves_card" [hidden]="pokemon.moves.length === 0">
+          <ion-card-header>
+            <ion-card-title>Moves</ion-card-title>
+          </ion-card-header>
+          <ion-card-content *ngFor="let move of pokemon.moves" >
+            <ion-item (click)="showMoves(move)" lines="full">
+              <ion-label slot="start" class="ion-text-capitalize">{{move.move.name}}</ion-label>
+              <ion-icon slot="end" class="ion-tappable"  [name]="move.show === true? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+            </ion-item>
+            <ion-item lines="none" class="ability_details animate__animated animate__delay-1s animate__flipInY" [hidden]="move.show === false">
+              <ion-row>
+                <ion-col size="12" class="vertical-align" *ngIf="move.processing === true">
+                  <ion-img src="assets/loader_4.gif"></ion-img>
+                </ion-col>
+                <ion-col size="12" *ngIf="move.processing === false">
+                  <ion-text><b>Description</b> :
+                    <ion-note>{{returnAbilityDescription(move.moveDetail.flavorTextEntries)}}</ion-note>
+                  </ion-text>
+                </ion-col>
+                <ion-col size="12" *ngIf="move.processing === false">
+                  <ion-text><b>Effect</b> :
+                    <ion-note>{{returnMoveEffectDescription(move.moveDetail.effectEntries, move.moveDetail.effectChance)}}</ion-note>
+                  </ion-text>
+                </ion-col>
+                <ion-col size="6" *ngIf="move.processing === false">
+                  <ion-text><b>Type</b> : </ion-text>
+                </ion-col>
+                <ion-col size="6" *ngIf="move.processing === false">
+                  <ion-img class="type_img" (click)="speakUp(move.moveDetail.type)" [alt]="move.moveDetail.type" [src]="'assets/types/' + move.moveDetail.type + '.webp'"></ion-img>
+                </ion-col>
+                <ion-col size="12" *ngIf="move.processing === false">
+                  <ion-list class="stat_list">
+                    <ion-item lines="full" >
+                      <ion-label class="stat" slot="start">Accuracy : </ion-label>
+                      <ion-label class="value" slot="end">{{move.moveDetail.accuracy}}</ion-label>
+                    </ion-item>
+                    <ion-item lines="full" >
+                      <ion-label class="stat" slot="start">Power : </ion-label>
+                      <ion-label class="value" slot="end">{{move.moveDetail.power}}</ion-label>
+                    </ion-item>
+                    <ion-item lines="full" >
+                      <ion-label class="stat" slot="start">PP : </ion-label>
+                      <ion-label class="value" slot="end">{{move.moveDetail.pp}}</ion-label>
+                    </ion-item>
+                  </ion-list>
+                </ion-col>
+              </ion-row>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+
       </ion-col>
 
     </ion-row>

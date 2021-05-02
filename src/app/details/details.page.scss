@@ -8,6 +8,9 @@ ion-header {
 }
 
 ion-content {
+  .type_img {
+    width: 25px;
+  }
   .details_section {
     .details_card {
       box-shadow: none;
@@ -16,9 +19,14 @@ ion-content {
           font-weight: 600;
           text-transform: capitalize;
         }
+        ion-img {
+          margin-left:4px;
+          width: 20px;
+        }
       }
       ion-card-content {
         .stat_list {
+          padding: 0;
           .stat {
             text-transform: capitalize;
             font-weight: 500;
@@ -34,11 +42,11 @@ ion-content {
         .description_text {
           font-weight: 600;
           padding: 6px;
-          color: var(--ion-color-dark);
+
         }
         ion-card-subtitle {
           font-weight: 700;
-          color: var(--ion-color-dark);
+
           font-size: 16px;
         }
         ion-icon {
@@ -63,6 +71,50 @@ ion-content {
           --color-checked: var(--ion-color-light);
           --background-checked: var(--ion-color-primary);
           --indicator-color: var(--ion-color-dark)
+        }
+      }
+    }
+  }
+
+  .abilities_card {
+    box-shadow: none;
+    ion-card-header {
+      ion-card-title {
+        font-weight: 700;
+      }
+    }
+    ion-card-content {
+      padding: 0;
+      ion-note {
+        font-size: 13px;
+        font-weight: 600;
+        font-style: italic;
+      }
+    }
+  }
+  .moves_card {
+    box-shadow: none;
+    ion-card-header {
+      ion-card-title {
+        font-weight: 700;
+      }
+    }
+    ion-card-content {
+      padding: 0;
+      ion-note {
+        font-size: 13px;
+        font-weight: 600;
+        font-style: italic;
+      }
+      .stat_list {
+        padding: 0;
+        .stat {
+          text-transform: capitalize;
+          font-weight: 500;
+          margin-right: 0;
+        }
+        .value {
+          font-weight: 600;
         }
       }
     }
