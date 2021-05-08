@@ -62,9 +62,11 @@
              <section>
                <ion-icon name="mic-circle-outline"  class="ion-tappable" (click)="speakUp(returnDescription(speciesDetails.flavorTextEntries))"></ion-icon>
                <ion-card-title class="ion-text-justify description_text" [innerHTML]="returnDescription(speciesDetails.flavorTextEntries) | safe: 'html'"></ion-card-title>
+               <p [hidden]="!platform.is('cordova')" (click)="playAudio()">Hear Cry</p>
                <br>
                <ion-card-subtitle>Height: {{pokemon.height}}</ion-card-subtitle>
                <ion-card-subtitle>Weight: {{pokemon.weight}}</ion-card-subtitle>
+               <ion-card-subtitle [hidden]="speciesDetails.genera.length === 0">Genus: {{returnGenus(speciesDetails.genera)}}</ion-card-subtitle>
                <ion-card-subtitle [hidden]="speciesDetails.habitat.length === 0">Habitat : {{speciesDetails.habitat}}</ion-card-subtitle>
                <ion-card-subtitle >Growth Rate : {{speciesDetails.growthRate.name}}</ion-card-subtitle>
                <ion-card-subtitle >Shape : {{speciesDetails.shape.name}}</ion-card-subtitle>

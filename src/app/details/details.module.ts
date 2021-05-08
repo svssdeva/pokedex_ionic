@@ -9,7 +9,8 @@ import { DetailsPageRoutingModule } from './details-routing.module';
 import { DetailsPage } from './details.page';
 import {ApiService} from '../services/api-service/api-service.service';
 import { SafePipeModule } from 'safe-pipe';
-import {HapticsService} from "../services/haptics/haptics.service";
+import {HapticsService} from '../services/haptics/haptics.service';
+import {Media} from '@ionic-native/media/ngx';
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import {HapticsService} from "../services/haptics/haptics.service";
     SafePipeModule,
   ],
   declarations: [DetailsPage],
-  providers: [ApiService, HapticsService]
+  providers: [ApiService, HapticsService, Media]
 })
 export class DetailsPageModule {}

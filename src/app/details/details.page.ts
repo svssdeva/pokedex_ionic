@@ -1,10 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../services/api-service/api-service.service';
 import {NavController, Platform} from '@ionic/angular';
 import {GlobalService} from '../services/global-service/global-service.service';
 import { Plugins } from '@capacitor/core';
 import {HapticsService} from '../services/haptics/haptics.service';
+import {Media} from '@ionic-native/media/ngx';
 const { Share } = Plugins;
 @Component({
   selector: 'app-details',
@@ -27,23 +28,32 @@ export class DetailsPage implements OnInit, OnDestroy {
   speciesDetails: SpeciesModal;
   activeSegment: string;
   evolutionChain: ChainModal;
+  currentMedia: any;
+  cryUrl: string;
   constructor(private activatedRoute: ActivatedRoute,
               private apiService: ApiService,
               private navController: NavController,
               private globalService: GlobalService,
               private hapticService: HapticsService,
-              private platform: Platform) {
+              private platform: Platform,
+              private media: Media) {
     this.pokemon = new PokemonDetailModal({});
     this.speciesDetails = new SpeciesModal({});
     this.evolutionChain = new ChainModal({});
     this.activeType = '';
     this.activeSegment = 'stats';
+    this.index = +this.activatedRoute.snapshot.paramMap.get('index') || 0;
+    this.name = this.activatedRoute.snapshot.paramMap.get('name') || '';
   }
 
   ngOnInit() {
     this.showGif = false;
-    this.index = +this.activatedRoute.snapshot.paramMap.get('index') || 0;
-    this.name = this.activatedRoute.snapshot.paramMap.get('name') || '';
+    if (this.platform.is('android')) {
+      this.cryUrl = `/android_asset/public/assets/cries/${this.index}.obb`;
+    } else {
+      this.cryUrl = `assets/cries/${this.index}.obb`;
+    }
+    this.currentMedia = this.media.create(this.cryUrl);
     if (this.index === 0) {
       this.globalService.showMessage('toast', {message: `There was some issue with index`});
       this.navController.pop();
@@ -58,7 +68,9 @@ export class DetailsPage implements OnInit, OnDestroy {
       speechSynthesis.cancel();
     }
   }
-
+  playAudio() {
+    this.currentMedia.play();
+  }
   async getSpecies() {
     try {
       const res = await this.apiService.getSpecies(this.name).toPromise();
@@ -198,6 +210,11 @@ export class DetailsPage implements OnInit, OnDestroy {
       console.log(e);
     } finally {
       ability.processing = false;
+    }
+  }
+  returnGenus(genera: Array<GenusModal>) {
+    if (genera.length > 0) {
+      return genera.filter(item => item.language.name === 'en')[0].genus;
     }
   }
 }
@@ -347,6 +364,7 @@ export class SpeciesModal {
   generation: NameUrlModal;
   growthRate: NameUrlModal;
   shape: NameUrlModal;
+  genera: Array<GenusModal> = [];
   constructor(props) {
     props = props || {};
     if (props && props.flavor_text_entries && props.flavor_text_entries.length > 0) {
@@ -371,9 +389,20 @@ export class SpeciesModal {
     this.generation = new NameUrlModal(props?.generation) || {name: '', url: ''};
     this.growthRate = new NameUrlModal(props?.growth_rate) || new NameUrlModal({});
     this.shape = new NameUrlModal(props?.shape) || new NameUrlModal({});
+    if (props && props.genera && props.genera.length > 0) {
+      this.genera = [...props.genera.map(item => new GenusModal(item))];
+    }
   }
 }
-
+class GenusModal {
+ genus: string;
+ language: NameUrlModal;
+ constructor(props) {
+   props = props || {};
+   this.genus = props.genus || '';
+   this.language = new NameUrlModal(props.language) || {name: '', url: ''};
+ }
+}
 class FlavorTextEntries {
   flavorText: string;
   language: string;
