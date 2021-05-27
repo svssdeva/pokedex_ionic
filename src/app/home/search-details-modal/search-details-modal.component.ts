@@ -4,8 +4,8 @@ import {PokemonDetailModal} from '../../details/details.page';
 
 @Component({
   selector: 'app-search-details-modal',
-  templateUrl: './search-details-modal.component.html',
-  styleUrls: ['./search-details-modal.component.scss'],
+  templateUrl: 'search-details-modal.component.html',
+  styleUrls: ['search-details-modal.component.scss'],
 })
 export class SearchDetailsModalComponent implements OnInit {
   pokemon: PokemonDetailModal;

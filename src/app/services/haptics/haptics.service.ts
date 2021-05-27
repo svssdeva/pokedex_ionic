@@ -1,42 +1,31 @@
 import { Injectable } from '@angular/core';
-import {
-  Plugins,
-  HapticsImpactStyle
-} from '@capacitor/core';
-
-const { Haptics } = Plugins;
+import { Haptics, HapticsImpactStyle } from '@capacitor/haptics';
 
 @Injectable()
 export class HapticsService {
 
   constructor() { }
-  hapticImpact(style = HapticsImpactStyle.Heavy) {
-    Haptics.impact({
-      style
-    });
-  }
+  hapticsImpactMedium = async () => {
+    await Haptics.impact({ style: HapticsImpactStyle.Medium });
+  };
 
-  hapticImpactMedium() {
-    this.hapticImpact(HapticsImpactStyle.Medium);
-  }
+  hapticsImpactLight = async () => {
+    await Haptics.impact({ style: HapticsImpactStyle.Light });
+  };
 
-  hapticImpactLight() {
-    this.hapticImpact(HapticsImpactStyle.Light);
-  }
+  hapticsVibrate = async () => {
+    await Haptics.vibrate();
+  };
 
-  hapticVibrate() {
-    Haptics.vibrate();
-  }
+  hapticsSelectionStart = async () => {
+    await Haptics.selectionStart();
+  };
 
-  hapticSelectionStart() {
-    Haptics.selectionStart();
-  }
+  hapticsSelectionChanged = async () => {
+    await Haptics.selectionChanged();
+  };
 
-  hapticSelectionChanged() {
-    Haptics.selectionChanged();
-  }
-
-  hapticSelectionEnd() {
-    Haptics.selectionEnd();
-  }
+  hapticsSelectionEnd = async () => {
+    await Haptics.selectionEnd();
+  };
 }

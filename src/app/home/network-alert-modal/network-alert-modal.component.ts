@@ -5,8 +5,8 @@ import {GlobalService} from '../../services/global-service/global-service.servic
 
 @Component({
   selector: 'app-network-alert-modal',
-  templateUrl: './network-alert-modal.component.html',
-  styleUrls: ['./network-alert-modal.component.scss'],
+  templateUrl: 'network-alert-modal.component.html',
+  styleUrls: ['network-alert-modal.component.scss'],
 })
 export class NetworkAlertModalComponent implements OnInit, OnDestroy {
   networkSubscription: Subscription;

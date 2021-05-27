@@ -3,14 +3,14 @@ import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../services/api-service/api-service.service';
 import {NavController, Platform} from '@ionic/angular';
 import {GlobalService} from '../services/global-service/global-service.service';
-import { Plugins } from '@capacitor/core';
+
 import {HapticsService} from '../services/haptics/haptics.service';
 import {Media} from '@ionic-native/media/ngx';
-const { Share } = Plugins;
+import { Share } from '@capacitor/share';
 @Component({
   selector: 'app-details',
-  templateUrl: './details.page.html',
-  styleUrls: ['./details.page.scss'],
+  templateUrl: 'details.page.html',
+  styleUrls: ['details.page.scss'],
 })
 export class DetailsPage implements OnInit, OnDestroy {
   index: number;
@@ -30,6 +30,7 @@ export class DetailsPage implements OnInit, OnDestroy {
   evolutionChain: ChainModal;
   currentMedia: any;
   cryUrl: string;
+  platForm: any;
   constructor(private activatedRoute: ActivatedRoute,
               private apiService: ApiService,
               private navController: NavController,
@@ -37,6 +38,7 @@ export class DetailsPage implements OnInit, OnDestroy {
               private hapticService: HapticsService,
               private platform: Platform,
               private media: Media) {
+    this.platForm = this.platform;
     this.pokemon = new PokemonDetailModal({});
     this.speciesDetails = new SpeciesModal({});
     this.evolutionChain = new ChainModal({});
@@ -147,7 +149,7 @@ export class DetailsPage implements OnInit, OnDestroy {
   speakUp(data: string) {
     if ('speechSynthesis' in window) {
       if (this.platform.is('hybrid')) {
-        this.hapticService.hapticImpactLight();
+        this.hapticService.hapticsImpactLight();
       }
       speechSynthesis.cancel();
     const message = new SpeechSynthesisUtterance(data);
@@ -156,14 +158,14 @@ export class DetailsPage implements OnInit, OnDestroy {
       speechSynthesis.speak(message);
     } else {
       if (this.platform.is('hybrid')) {
-        this.hapticService.hapticImpactMedium();
+        this.hapticService.hapticsImpactMedium();
       }
       this.globalService.showMessage('toast', {message: `Speak Up not Supported by your device`});
     }
   }
   async sharePokemon() {
     if (this.platform.is('hybrid')) {
-      this.hapticService.hapticImpactMedium();
+      await this.hapticService.hapticsImpactMedium();
     }
     await Share.share({
       title: this.pokemon.name,

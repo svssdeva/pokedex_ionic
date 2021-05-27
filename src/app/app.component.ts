@@ -1,12 +1,7 @@
 import {Component, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {MenuController, Platform} from '@ionic/angular';
 import {GlobalService} from './services/global-service/global-service.service';
-import {
-  Plugins,
-  StatusBarStyle,
-} from '@capacitor/core';
-
-const { StatusBar } = Plugins;
+import { StatusBar, StatusBarStyle } from '@capacitor/status-bar';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
