@@ -30,7 +30,6 @@
     "@ngrx/store": "^11.1.0",
     "animate.css": "^4.1.1",
     "cordova-plugin-media": "^5.0.3",
-    "ng-connection-service": "^1.0.4",
     "rxjs": "~6.6.0",
     "rxjs-compat": "^6.6.7",
     "safe-pipe": "^1.0.3",
