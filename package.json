@@ -37,7 +37,7 @@
     "@ngrx/store": "^12.0.0",
     "animate.css": "^4.1.1",
     "cordova-plugin-media": "^5.0.3",
-    "rxjs": "~6.6.0",
+    "rxjs": "~7.1.0",
     "rxjs-compat": "^6.6.7",
     "safe-pipe": "^1.0.3",
     "tslib": "^2.0.0",
@@ -55,16 +55,16 @@
     "@angular/language-service": "~12.0.2",
     "@capacitor/cli": "^3.0.0",
     "@ionic/angular-toolkit": "^4.0.0",
+    "@ionic/lab": "^3.2.10",
     "@types/jasmine": "~3.7.5",
     "@types/jasminewd2": "~2.0.9",
-    "@types/node": "^12.11.1",
+    "@types/node": "^15.6.1",
     "@typescript-eslint/eslint-plugin": "4.25.0",
     "@typescript-eslint/parser": "4.25.0",
     "eslint": "^7.27.0",
     "eslint-plugin-import": "2.23.3",
     "eslint-plugin-jsdoc": "35.0.0",
     "eslint-plugin-prefer-arrow": "1.2.3",
-    "@ionic/lab": "^3.2.10",
     "jasmine-core": "~3.7.1",
     "jasmine-spec-reporter": "~7.0.0",
     "jetifier": "^2.0.0",
@@ -75,8 +75,8 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.6.0",
     "protractor": "~7.0.0",
-    "ts-node": "~8.3.0",
-    "typescript": "~4.2.4"
+    "ts-node": "~10.0.0",
+    "typescript": "^4.2.4"
   },
   "description": "An Ionic project"
 }
