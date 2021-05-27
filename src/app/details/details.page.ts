@@ -7,6 +7,7 @@ import {GlobalService} from '../services/global-service/global-service.service';
 import {HapticsService} from '../services/haptics/haptics.service';
 import {Media} from '@ionic-native/media/ngx';
 import { Share } from '@capacitor/share';
+
 @Component({
   selector: 'app-details',
   templateUrl: 'details.page.html',

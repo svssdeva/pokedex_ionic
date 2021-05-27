@@ -49,6 +49,7 @@ export class HomePage implements OnInit, OnDestroy {
     } else {
       this.processing = true;
       const lastCachedIndex = await this.storageService.getItem('lastCachedIndex');
+      console.log(lastCachedIndex);
       for(let i = this.cacheIndex; i < +lastCachedIndex; i++) {
         const data = await this.storageService.getItem(JSON.stringify(i));
         this.pokemons = [...this.pokemons, ...JSON.parse(data)];
@@ -109,7 +110,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   async searchPokemon(event) {
-    const value = event.target.value.trim();
+    const value = event.target.value.toLowerCase().trim();
     if (value === '') {
       await this.globalService.showMessage('toast', {message: `Please enter a name/id!!!`});
     } else {

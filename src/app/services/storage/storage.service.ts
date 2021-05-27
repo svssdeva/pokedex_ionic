@@ -1,9 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Plugins } from '@capacitor/core';
-
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { Storage } = Plugins;
+import { Storage } from '@capacitor/storage';
 @Injectable({
   providedIn: 'root'
 })

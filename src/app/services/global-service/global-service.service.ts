@@ -23,7 +23,7 @@ export class GlobalService {
     this.networkStatus$.next(value);
   }
   getNetworkConnectionValue() {
-    return this.networkStatus$.asObservable();
+    return this.networkStatus$;
   }
   removeNetworkListeners() {
     Network.removeAllListeners();

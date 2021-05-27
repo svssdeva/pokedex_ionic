@@ -12,13 +12,15 @@ export class NetworkAlertModalComponent implements OnInit, OnDestroy {
   networkSubscription: Subscription;
   connected: boolean;
   constructor(private modalController: ModalController,
-              private globalService: GlobalService) { }
-
-  ngOnInit() {
+              private globalService: GlobalService) {
     this.networkSubscription = this.globalService.getNetworkConnectionValue().subscribe(res => {
-      this.connected = res;
+      if (res) {
+        this.connected = res;
+      }
     });
   }
+
+  ngOnInit() {  }
   async ngOnDestroy() {
     this.networkSubscription.unsubscribe();
   }

@@ -1,6 +1,9 @@
 <ion-content>
   <ion-grid>
     <ion-row>
+      <ion-col size="12" class="vertical-align ion-text-center">
+        <ion-title>{{connected === true ? 'Internet Connection Found' : 'Internet Connection Not Found'}}</ion-title>
+      </ion-col>
       <ion-col size="12" class="vertical-align">
         <ion-img [src]="connected === true ? 'assets/internet_found.gif' : 'assets/no_internet.gif'"></ion-img>
       </ion-col>

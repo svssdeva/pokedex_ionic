@@ -50,7 +50,7 @@
           <ion-card-content [hidden]="activeSegment === 'details'">
 
             <ion-list class="stat_list ">
-              <ion-item lines="full" *ngFor="let stat of pokemon.stats; let i = index" class="animate__animated animate__slideInLeft animate__delay-{{i}}s">
+              <ion-item lines="full" *ngFor="let stat of pokemon.stats; let i = index" class="animate__animated animate__slideInLeft animate__delay-1s">
                 <ion-label class="stat" slot="start">{{stat.stat.name}} : </ion-label>
                 <ion-label class="value" slot="end">{{stat.baseStat}}</ion-label>
               </ion-item>
@@ -61,8 +61,8 @@
           <ion-card-content class="details_card_content" [hidden]="activeSegment === 'stats'">
              <section>
                <ion-icon name="mic-circle-outline"  class="ion-tappable" (click)="speakUp(returnDescription(speciesDetails.flavorTextEntries))"></ion-icon>
-               <ion-card-title class="ion-text-justify description_text" [innerHTML]="returnDescription(speciesDetails.flavorTextEntries) | safe: 'html'"></ion-card-title>
-               <p [hidden]="!platForm.is('cordova')" (click)="playAudio()">Hear Cry</p>
+               <ion-card-title class="ion-text-justify description_text" [innerHTML]="returnDescription(speciesDetails.flavorTextEntries)"></ion-card-title>
+               <!--<p *ngIf="platForm.is('android')" (click)="playAudio()">Hear Cry</p>-->
                <br>
                <ion-card-subtitle>Height: {{pokemon.height}}</ion-card-subtitle>
                <ion-card-subtitle>Weight: {{pokemon.weight}}</ion-card-subtitle>
