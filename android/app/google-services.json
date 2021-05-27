@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "537440639663",
+    "project_id": "pokedex-72767",
+    "storage_bucket": "pokedex-72767.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537440639663:android:94179e90cada9cff10125a",
+        "android_client_info": {
+          "package_name": "com.deva.pokedex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "537440639663-pirbcegvhgi52m0bdorcdp1r7q4e6gji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAym0Lczviwu7GNhjt9SbydjwxdAPE9boI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "537440639663-pirbcegvhgi52m0bdorcdp1r7q4e6gji.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
