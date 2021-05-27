@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
 import {AlertController, ToastController} from '@ionic/angular';
-import { Plugins } from '@capacitor/core';
-import {BehaviorSubject} from "rxjs";
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { Network } = Plugins;
+import {BehaviorSubject} from 'rxjs';
+import { Network } from '@capacitor/network';
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalService {
   appVersion = 1;
-  private _networkStatus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  private networkStatus$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   constructor(private toastController: ToastController,
               private alertController: AlertController) {
    Network.addListener('networkStatusChange', (status) => {
@@ -23,10 +20,10 @@ export class GlobalService {
     });
   }
   setNetworkConnectionValue(value: boolean) {
-    this._networkStatus$.next(value);
+    this.networkStatus$.next(value);
   }
   getNetworkConnectionValue() {
-    return this._networkStatus$.asObservable();
+    return this.networkStatus$.asObservable();
   }
   removeNetworkListeners() {
     Network.removeAllListeners();
