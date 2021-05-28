@@ -8,6 +8,7 @@ import {HapticsService} from '../services/haptics/haptics.service';
 import {Media} from '@ionic-native/media/ngx';
 import { Share } from '@capacitor/share';
 import { ScreenReader } from '@capacitor/screen-reader';
+import {AngularFireStorage} from "@angular/fire/storage";
 @Component({
   selector: 'app-details',
   templateUrl: 'details.page.html',
@@ -39,7 +40,8 @@ export class DetailsPage implements OnInit, OnDestroy {
               private globalService: GlobalService,
               private hapticService: HapticsService,
               private platform: Platform,
-              private media: Media) {
+              private media: Media,
+              private angularFireStorage: AngularFireStorage) {
     this.platForm = this.platform;
     this.pokemon = new PokemonDetailModal({});
     this.speciesDetails = new SpeciesModal({});
@@ -53,15 +55,11 @@ export class DetailsPage implements OnInit, OnDestroy {
    checkScreenReaderEnabled = async () => {
     const { value } = await ScreenReader.isEnabled();
     this.screenReaderEnabled = value;
+    console.log('58', this.screenReaderEnabled);
   };
   ngOnInit() {
     this.showGif = false;
-    if (this.platform.is('android')) {
-      this.cryUrl = `/android_asset/public/assets/cries/${this.index}.obb`;
-    } else {
-      this.cryUrl = `assets/cries/${this.index}.obb`;
-    }
-    this.currentMedia = this.media.create(this.cryUrl);
+    this.getCryUrl();
     if (this.index === 0) {
       this.globalService.showMessage('toast', {message: `There was some issue with index`});
       this.navController.pop();
@@ -70,7 +68,21 @@ export class DetailsPage implements OnInit, OnDestroy {
       this.getSpecies();
     }
   }
-
+  getCryUrl() {
+    /*if (this.platform.is('android')) {
+      this.cryUrl = `/android_asset/public/assets/cries/${this.index}.obb`;
+    } else {
+      this.cryUrl = `assets/cries/${this.index}.obb`;
+    }*/
+   const storageRef = this.angularFireStorage.ref(`${this.index}.ogg`);
+   storageRef.getDownloadURL().subscribe(res => {
+     this.cryUrl = res;
+     console.log('80', this.cryUrl);
+     this.currentMedia = this.media.create(this.cryUrl);
+   }, err => {
+     this.cryUrl = '';
+   });
+  }
   ngOnDestroy() {
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();

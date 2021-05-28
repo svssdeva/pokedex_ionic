@@ -35,12 +35,13 @@ export class AppComponent implements OnInit, OnDestroy {
               private router: Router) {
     this.appVersion = this.globalService.appVersion || 1;
     this.platform.ready().then(() => {
+      this.initializeApp();
       this.globalService.getNetWorkStatus();
       if (this.platform.is('hybrid')) {
         this.hideStatusBar();
       }
     });
-    this.initializeApp();
+
   }
   initializeApp() {
     this.backButtonEvent();
@@ -121,6 +122,10 @@ export class AppComponent implements OnInit, OnDestroy {
         await alert.dismiss();
         return {};
       }
+      if ( that.router.url.includes('details')) {
+        await that.navController.pop();
+        return;
+      }
       that.routerOutlets.forEach((outlet: IonRouterOutlet) => {
         if (that.router.url === 'home' || that.router.url === '') {
           if (new Date().getTime() - that.lastTimeBackPress < that.timePeriodToExit) {
@@ -134,7 +139,6 @@ export class AppComponent implements OnInit, OnDestroy {
         } else {
           that.navController.pop();
         }
-
       });
     });
   }

@@ -36,7 +36,7 @@
             </ion-chip>
           </ion-card-header>
           <ion-card-content class="vertical-align">
-            <img style="height: 100px" [src]="pokemon?.gifImage || ''">
+            <img (click)="playAudio()" style="height: 100px" [src]="pokemon?.gifImage || ''">
           </ion-card-content>
 
           <ion-segment swipeGesture="true" scrollable [value]="activeSegment" (ionChange)="changeSegment($event)">
@@ -62,7 +62,7 @@
              <section>
                <ion-icon name="mic-circle-outline"  class="ion-tappable" (click)="speakUp(returnDescription(speciesDetails.flavorTextEntries))"></ion-icon>
                <ion-card-title class="ion-text-justify description_text" [innerHTML]="returnDescription(speciesDetails.flavorTextEntries)"></ion-card-title>
-               <!--<p *ngIf="platForm.is('android')" (click)="playAudio()">Hear Cry</p>-->
+             <!--  <ion-button class="ion-margin-vertical" color="primary" shape="round" *ngIf="platForm.is('android') && cryUrl.length > 0" (click)="playAudio()">Hear Cry</ion-button>-->
                <br>
                <ion-card-subtitle>Height: {{pokemon.height}}</ion-card-subtitle>
                <ion-card-subtitle>Weight: {{pokemon.weight}}</ion-card-subtitle>
