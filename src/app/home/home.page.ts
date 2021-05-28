@@ -25,6 +25,7 @@ export class HomePage implements OnInit, OnDestroy {
   isNetworkConnected: boolean;
   networkSubscription: Subscription;
   cacheIndex = 0;
+
   constructor(private apiService: ApiService,
               private router: Router,
               private globalService: GlobalService,

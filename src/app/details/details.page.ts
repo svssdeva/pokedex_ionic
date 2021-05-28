@@ -7,7 +7,7 @@ import {GlobalService} from '../services/global-service/global-service.service';
 import {HapticsService} from '../services/haptics/haptics.service';
 import {Media} from '@ionic-native/media/ngx';
 import { Share } from '@capacitor/share';
-
+import { ScreenReader } from '@capacitor/screen-reader';
 @Component({
   selector: 'app-details',
   templateUrl: 'details.page.html',
@@ -32,6 +32,7 @@ export class DetailsPage implements OnInit, OnDestroy {
   currentMedia: any;
   cryUrl: string;
   platForm: any;
+  screenReaderEnabled: boolean;
   constructor(private activatedRoute: ActivatedRoute,
               private apiService: ApiService,
               private navController: NavController,
@@ -47,8 +48,12 @@ export class DetailsPage implements OnInit, OnDestroy {
     this.activeSegment = 'stats';
     this.index = +this.activatedRoute.snapshot.paramMap.get('index') || 0;
     this.name = this.activatedRoute.snapshot.paramMap.get('name') || '';
+    this.checkScreenReaderEnabled();
   }
-
+   checkScreenReaderEnabled = async () => {
+    const { value } = await ScreenReader.isEnabled();
+    this.screenReaderEnabled = value;
+  };
   ngOnInit() {
     this.showGif = false;
     if (this.platform.is('android')) {
@@ -160,8 +165,12 @@ export class DetailsPage implements OnInit, OnDestroy {
     } else {
       if (this.platform.is('hybrid')) {
         this.hapticService.hapticsImpactMedium();
+        if (this.screenReaderEnabled === true) {
+          ScreenReader.speak({ value: data, language: 'en' });
+        } else {
+          this.globalService.showMessage('toast', {message: `Speak Up not Supported by your device`});
+        }
       }
-      this.globalService.showMessage('toast', {message: `Speak Up not Supported by your device`});
     }
   }
   async sharePokemon() {

@@ -26,6 +26,7 @@
     "@capacitor/core": "^3.0.0",
     "@capacitor/haptics": "^1.0.0",
     "@capacitor/network": "^1.0.0",
+    "@capacitor/screen-reader": "^1.0.0",
     "@capacitor/share": "^1.0.0",
     "@capacitor/status-bar": "^1.0.0",
     "@capacitor/storage": "^1.0.0",
