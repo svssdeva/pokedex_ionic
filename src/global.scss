@@ -30,7 +30,9 @@
 * {
   font-family: 'Raleway', sans-serif;
 }
-
+.animate__animated {
+  animation-duration: 0.8s;
+}
 .vertical-align {
   display: flex;
   align-content: center;

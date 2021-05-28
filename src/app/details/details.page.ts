@@ -51,6 +51,12 @@ export class DetailsPage implements OnInit, OnDestroy {
     this.index = +this.activatedRoute.snapshot.paramMap.get('index') || 0;
     this.name = this.activatedRoute.snapshot.paramMap.get('name') || '';
     this.checkScreenReaderEnabled();
+    this.backButtonEvent();
+  }
+  backButtonEvent() {
+    this.platform.backButton.subscribeWithPriority(10, () => {
+      this.navController.pop();
+    });
   }
    checkScreenReaderEnabled = async () => {
     const { value } = await ScreenReader.isEnabled();
@@ -77,7 +83,6 @@ export class DetailsPage implements OnInit, OnDestroy {
    const storageRef = this.angularFireStorage.ref(`${this.index}.ogg`);
    storageRef.getDownloadURL().subscribe(res => {
      this.cryUrl = res;
-     console.log('80', this.cryUrl);
      this.currentMedia = this.media.create(this.cryUrl);
    }, err => {
      this.cryUrl = '';
