@@ -10,7 +10,7 @@ import { DetailsPage } from './details.page';
 import {ApiService} from '../services/api-service/api-service.service';
 import { SafePipeModule } from 'safe-pipe';
 import {HapticsService} from '../services/haptics/haptics.service';
-import {Media} from '@ionic-native/media/ngx';
+/*import {Media} from '@ionic-native/media/ngx';*/
 
 @NgModule({
   imports: [
@@ -21,6 +21,6 @@ import {Media} from '@ionic-native/media/ngx';
     SafePipeModule,
   ],
   declarations: [DetailsPage],
-  providers: [ApiService, HapticsService, Media]
+  providers: [ApiService, HapticsService]
 })
 export class DetailsPageModule {}

@@ -8,6 +8,7 @@ import {NetworkAlertModalComponent} from './network-alert-modal/network-alert-mo
 import {SearchDetailsModalComponent} from './search-details-modal/search-details-modal.component';
 import {PokemonDetailModal} from '../details/details.page';
 import {StorageService} from '../services/storage/storage.service';
+import {lastValueFrom} from 'rxjs';
 
 
 @Component({
@@ -74,7 +75,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
     const items: Array<PokemonListModal> = [];
     try {
-      const res = await this.apiService.getPokemons(this.offset, this.limit, this.type).toPromise();
+      const res = await lastValueFrom(this.apiService.getPokemons(this.offset, this.limit, this.type));
       if (res.length < 20) {
         this.canPaginate = false;
       }
@@ -117,7 +118,7 @@ export class HomePage implements OnInit, OnDestroy {
     } else {
       event.target.disabled = true;
       try {
-        const res = await this.apiService.findPokemon(value).toPromise();
+        const res = await lastValueFrom(this.apiService.findPokemon(value));
         const pokemon = new PokemonDetailModal(res);
         if (pokemon?.name?.length > 0) {
           await this.openSearchedPokemonModal(pokemon , event);

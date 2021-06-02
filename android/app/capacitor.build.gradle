@@ -9,6 +9,10 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
+    implementation project(':capacitor-community-firebase-remote-config')
+    implementation project(':capacitor-community-native-audio')
+    implementation project(':capacitor-community-speech-recognition')
+    implementation project(':capacitor-community-text-to-speech')
     implementation project(':capacitor-haptics')
     implementation project(':capacitor-network')
     implementation project(':capacitor-screen-reader')

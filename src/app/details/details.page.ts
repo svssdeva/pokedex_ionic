@@ -1,14 +1,15 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ApiService} from '../services/api-service/api-service.service';
 import {NavController, Platform} from '@ionic/angular';
 import {GlobalService} from '../services/global-service/global-service.service';
 
 import {HapticsService} from '../services/haptics/haptics.service';
-import {Media} from '@ionic-native/media/ngx';
-import { Share } from '@capacitor/share';
-import { ScreenReader } from '@capacitor/screen-reader';
-import {AngularFireStorage} from "@angular/fire/storage";
+import {Share} from '@capacitor/share';
+
+import {AngularFireStorage} from '@angular/fire/storage';
+import {lastValueFrom} from 'rxjs';
+
 @Component({
   selector: 'app-details',
   templateUrl: 'details.page.html',
@@ -34,13 +35,14 @@ export class DetailsPage implements OnInit, OnDestroy {
   cryUrl: string;
   platForm: any;
   screenReaderEnabled: boolean;
+
   constructor(private activatedRoute: ActivatedRoute,
               private apiService: ApiService,
               private navController: NavController,
               private globalService: GlobalService,
               private hapticService: HapticsService,
               private platform: Platform,
-              private media: Media,
+              /*private media: Media,*/
               private angularFireStorage: AngularFireStorage) {
     this.platForm = this.platform;
     this.pokemon = new PokemonDetailModal({});
@@ -53,16 +55,19 @@ export class DetailsPage implements OnInit, OnDestroy {
     this.checkScreenReaderEnabled();
     this.backButtonEvent();
   }
+
   backButtonEvent() {
     this.platform.backButton.subscribeWithPriority(10, () => {
       this.navController.pop();
     });
   }
-   checkScreenReaderEnabled = async () => {
-    const { value } = await ScreenReader.isEnabled();
-    this.screenReaderEnabled = value;
-    console.log('58', this.screenReaderEnabled);
+
+  checkScreenReaderEnabled = async () => {
+    /*   const { value } = await ScreenReader.isEnabled();
+       this.screenReaderEnabled = value;
+       console.log('58', this.screenReaderEnabled);*/
   };
+
   ngOnInit() {
     this.showGif = false;
     this.getCryUrl();
@@ -74,31 +79,35 @@ export class DetailsPage implements OnInit, OnDestroy {
       this.getSpecies();
     }
   }
+
   getCryUrl() {
     /*if (this.platform.is('android')) {
       this.cryUrl = `/android_asset/public/assets/cries/${this.index}.obb`;
     } else {
       this.cryUrl = `assets/cries/${this.index}.obb`;
     }*/
-   const storageRef = this.angularFireStorage.ref(`${this.index}.ogg`);
-   storageRef.getDownloadURL().subscribe(res => {
-     this.cryUrl = res;
-     this.currentMedia = this.media.create(this.cryUrl);
-   }, err => {
-     this.cryUrl = '';
-   });
+    const storageRef = this.angularFireStorage.ref(`${this.index}.ogg`);
+    storageRef.getDownloadURL().subscribe(res => {
+      this.cryUrl = res;
+      //   this.currentMedia = this.media.create(this.cryUrl);
+    }, err => {
+      this.cryUrl = '';
+    });
   }
+
   ngOnDestroy() {
     if ('speechSynthesis' in window) {
       speechSynthesis.cancel();
     }
   }
+
   playAudio() {
     this.currentMedia.play();
   }
+
   async getSpecies() {
     try {
-      const res = await this.apiService.getSpecies(this.name).toPromise();
+      const res = await lastValueFrom(this.apiService.getSpecies(this.name));
       this.speciesDetails = new SpeciesModal(res);
       if (this.speciesDetails.evolvesFrom.name.length > 0) {
         await this.getEvolutionDetails(this.speciesDetails.evolutionChainUrl);
@@ -107,28 +116,32 @@ export class DetailsPage implements OnInit, OnDestroy {
       console.log(e);
     } finally {
       if (this.speciesDetails.evolvesFrom.name.length > 0) {
+        // eslint-disable-next-line max-len
         this.speciesDetails.evolvesFrom.gifImage = `https://projectpokemon.org/images/normal-sprite/${this.speciesDetails.evolvesFrom.name}.gif`;
       }
     }
   }
+
   async getEvolutionDetails(url: string) {
     if (url === '') {
-      return ;
+      return;
     }
     try {
-      const res = await this.apiService.getEvolutionDetails(url).toPromise();
-      if (res && res['chain']) {
+      const res = await lastValueFrom(this.apiService.getEvolutionDetails(url));
+      if (res && res.hasOwnProperty('chain') && res['chain']) {
         this.evolutionChain = new ChainModal(res['chain']);
       }
     } catch (e) {
       console.log(e);
     } finally {
+
     }
   }
+
   async fetchDetails() {
     this.processing = true;
     try {
-      const res = await this.apiService.getDetails(this.index).toPromise();
+      const res = await lastValueFrom(this.apiService.getDetails(this.index));
       this.pokemon = new PokemonDetailModal(res);
       if (this.pokemon.types.length > 0) {
         this.setActiveType(this.pokemon.types[0].type.name);
@@ -154,28 +167,34 @@ export class DetailsPage implements OnInit, OnDestroy {
   }
 
   returnDescription(flavorTextEntries: Array<FlavorTextEntries>) {
+    // eslint-disable-next-line max-len
     const details = flavorTextEntries.filter(item => item.language === 'en' && (item.version === 'emerald' || item.version === 'heartgold' || item.version === 'sword' || item.version === 'aplha-sapphire')).map(item => item.flavorText);
     return [...new Set(details)].join(' ');
   }
+
   returnAbilityDescription(flavorTextEntries: Array<FlavorTextEntries>) {
+    // eslint-disable-next-line max-len
     const details = flavorTextEntries.filter(item => item.language === 'en' && (item.version === 'sword' || item.version === 'ultra-sun-ultra-moon')).map(item => item.flavorText);
     return [...new Set(details)].join(' ');
   }
+
   returnEffectDescription(effectEntry: Array<EffectEntryModal>) {
     const details = effectEntry.filter(item => item.language.name === 'en').map(item => item.effect);
     return [...new Set(details)].join(' ');
   }
+
   returnMoveEffectDescription(effectEntry: Array<EffectEntryModal>, effectChance: number) {
     const details = effectEntry.filter(item => item.language.name === 'en').map(item => item.effect);
     return [...new Set(details)].join(' ').replace('$effect_chance%', JSON.stringify(effectChance) + '%');
   }
+
   speakUp(data: string) {
     if ('speechSynthesis' in window) {
       if (this.platform.is('hybrid')) {
         this.hapticService.hapticsImpactLight();
       }
       speechSynthesis.cancel();
-    const message = new SpeechSynthesisUtterance(data);
+      const message = new SpeechSynthesisUtterance(data);
       message.volume = 10;
       message.lang = 'en-UK';
       speechSynthesis.speak(message);
@@ -183,13 +202,14 @@ export class DetailsPage implements OnInit, OnDestroy {
       if (this.platform.is('hybrid')) {
         this.hapticService.hapticsImpactMedium();
         if (this.screenReaderEnabled === true) {
-          ScreenReader.speak({ value: data, language: 'en' });
+          //ScreenReader.speak({ value: data, language: 'en' });
         } else {
           this.globalService.showMessage('toast', {message: `Speak Up not Supported by your device`});
         }
       }
     }
   }
+
   async sharePokemon() {
     if (this.platform.is('hybrid')) {
       await this.hapticService.hapticsImpactMedium();
@@ -201,6 +221,7 @@ export class DetailsPage implements OnInit, OnDestroy {
       dialogTitle: 'Share with fellow trainers...'
     });
   }
+
   async showMoves(move: MoveModal) {
     move.show = !move.show;
     if (move.show === true) {
@@ -209,10 +230,11 @@ export class DetailsPage implements OnInit, OnDestroy {
       }
     }
   }
+
   async openMove(move: MoveModal) {
     move.processing = true;
     try {
-      const res = await this.apiService.getMove(move.move.url).toPromise();
+      const res = await lastValueFrom(this.apiService.getMove(move.move.url));
       move.moveDetail = new MoveDetailModal(res);
     } catch (e) {
       console.log(e);
@@ -221,18 +243,20 @@ export class DetailsPage implements OnInit, OnDestroy {
       console.log(move);
     }
   }
- async showAbility(ability: AbilityModal) {
+
+  async showAbility(ability: AbilityModal) {
     ability.show = !ability.show;
     if (ability.show === true) {
       if (ability.abilityDetail.effectEntries.length === 0 && ability.abilityDetail.flavorTextEntries.length === 0) {
-       await this.openAbility(ability);
+        await this.openAbility(ability);
       }
     }
   }
+
   async openAbility(ability: AbilityModal) {
     ability.processing = true;
     try {
-      const res = await this.apiService.getAbility(ability.ability.url).toPromise();
+      const res = await lastValueFrom(this.apiService.getAbility(ability.ability.url));
       const abilityDetail = new AbilityDetailModal(res);
       ability.abilityDetail = {...abilityDetail};
     } catch (e) {
@@ -241,6 +265,7 @@ export class DetailsPage implements OnInit, OnDestroy {
       ability.processing = false;
     }
   }
+
   returnGenus(genera: Array<GenusModal>) {
     if (genera.length > 0) {
       return genera.filter(item => item.language.name === 'en')[0].genus;
@@ -331,11 +356,12 @@ export class AbilityModal {
   show: boolean;
   processing: boolean;
   abilityDetail: AbilityDetailModal;
+
   constructor(props) {
     props = props || {};
     this.ability = new NameUrlModal(props.ability) || {name: '', url: ''};
     this.show = false;
-    this.processing  = true;
+    this.processing = true;
     this.abilityDetail = new AbilityDetailModal({});
   }
 }
@@ -367,11 +393,12 @@ export class MoveModal {
   show: boolean;
   processing: boolean;
   moveDetail: MoveDetailModal;
+
   constructor(props) {
     props = props || {};
     this.move = new NameUrlModal(props.move) || {name: '', url: ''};
     this.show = false;
-    this.processing  = true;
+    this.processing = true;
     this.moveDetail = new MoveDetailModal({});
   }
 }
@@ -394,6 +421,7 @@ export class SpeciesModal {
   growthRate: NameUrlModal;
   shape: NameUrlModal;
   genera: Array<GenusModal> = [];
+
   constructor(props) {
     props = props || {};
     if (props && props.flavor_text_entries && props.flavor_text_entries.length > 0) {
@@ -405,9 +433,9 @@ export class SpeciesModal {
     }
     this.evolutionChainUrl = props?.evolution_chain?.url;
     if (props && props.evolves_from_species) {
-      this.evolvesFrom = props.evolves_from_species || {name:'',  url: '', gifImage: ''};
+      this.evolvesFrom = props.evolves_from_species || {name: '', url: '', gifImage: ''};
     } else {
-      this.evolvesFrom = {name:'',  url: '', gifImage: ''};
+      this.evolvesFrom = {name: '', url: '', gifImage: ''};
     }
     this.isLegendary = props?.is_legendary || false;
     this.isMythical = props?.is_mythical || false;
@@ -423,24 +451,28 @@ export class SpeciesModal {
     }
   }
 }
+
 class GenusModal {
- genus: string;
- language: NameUrlModal;
- constructor(props) {
-   props = props || {};
-   this.genus = props.genus || '';
-   this.language = new NameUrlModal(props.language) || {name: '', url: ''};
- }
+  genus: string;
+  language: NameUrlModal;
+
+  constructor(props) {
+    props = props || {};
+    this.genus = props.genus || '';
+    this.language = new NameUrlModal(props.language) || {name: '', url: ''};
+  }
 }
+
 class FlavorTextEntries {
   flavorText: string;
   language: string;
   version: string;
+
   constructor(props) {
     props = props || {};
     this.flavorText = props?.flavor_text || '';
     this.language = props?.language?.name || '';
-    this.version = props?.version?.name ||  props?.version_group?.name || '';
+    this.version = props?.version?.name || props?.version_group?.name || '';
   }
 }
 
@@ -448,6 +480,7 @@ class ChainModal {
   evolutionDetails: Array<any> = [];
   evolvesTo: Array<EvolveModal> = [];
   species: NameUrlModal;
+
   constructor(props) {
     props = props || {};
     this.evolutionDetails = props?.evolution_details || [];
@@ -456,13 +489,14 @@ class ChainModal {
         this.evolvesTo.push(new EvolveModal(item));
       });
     }
-    this.species = new NameUrlModal(props?.species) || {name:'',  url: ''};
+    this.species = new NameUrlModal(props?.species) || {name: '', url: ''};
   }
 }
 
 class EvolveModal {
   evolvesTo: Array<EvolveModal> = [];
   species: NameUrlModal;
+
   constructor(props) {
     props = props || {};
     if (props && props.evolves_to && props.evolves_to.length > 0) {
@@ -470,13 +504,14 @@ class EvolveModal {
         this.evolvesTo.push(new EvolveModal(item));
       });
     }
-    this.species = new NameUrlModal(props?.species) || {name:'',  url: ''};
+    this.species = new NameUrlModal(props?.species) || {name: '', url: ''};
   }
 }
 
 class NameUrlModal {
   name: string;
   url: string;
+
   constructor(props) {
     props = props || {};
     this.name = props.name || '';
@@ -488,6 +523,7 @@ class NameUrlModal {
 export class AbilityDetailModal {
   effectEntries: Array<EffectEntryModal> = [];
   flavorTextEntries: Array<FlavorTextEntries> = [];
+
   constructor(props) {
     props = props || {};
     if (props?.effect_entries?.length > 0) {
@@ -504,10 +540,12 @@ export class AbilityDetailModal {
     }
   }
 }
+
 export class EffectEntryModal {
   effect: string;
   shortEffect: string;
   language: NameUrlModal;
+
   constructor(props) {
     props = props || {};
     this.effect = props.effect || '';
@@ -515,7 +553,6 @@ export class EffectEntryModal {
     this.language = new NameUrlModal(props.language) || new NameUrlModal({});
   }
 }
-
 
 
 export class MoveDetailModal {
@@ -527,6 +564,7 @@ export class MoveDetailModal {
   effectChance: number;
   effectEntries: Array<EffectEntryModal> = [];
   flavorTextEntries: Array<FlavorTextEntries> = [];
+
   constructor(props) {
     props = props || {};
     this.accuracy = props.accuracy || 0;
