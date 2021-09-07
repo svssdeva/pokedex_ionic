@@ -6,6 +6,10 @@
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
+  "gcm_sender_id": "537440639663",
+  "permissions": [
+        "background"
+    ],
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",

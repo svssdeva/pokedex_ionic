@@ -87,7 +87,7 @@
           <ion-card-header>
             <ion-card-title>Abilities</ion-card-title>
           </ion-card-header>
-          <ion-card-content *ngFor="let ability of pokemon.abilities" >
+          <ion-card-content *ngFor="let ability of pokemon.abilities; let i = index; trackBy: trackByAbility" >
             <ion-item (click)="showAbility(ability)" lines="full">
               <ion-label slot="start" class="ion-text-capitalize">{{ability.ability.name}}</ion-label>
               <ion-icon slot="end" class="ion-tappable"  [name]="ability.show === true? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
@@ -115,7 +115,7 @@
           <ion-card-header>
             <ion-card-title>Moves</ion-card-title>
           </ion-card-header>
-          <ion-card-content *ngFor="let move of pokemon.moves" >
+          <ion-card-content *ngFor="let move of pokemon.moves; let i = index; trackBy: trackByMove" >
             <ion-item (click)="showMoves(move)" lines="full">
               <ion-label slot="start" class="ion-text-capitalize">{{move.move.name}}</ion-label>
               <ion-icon slot="end" class="ion-tappable"  [name]="move.show === true? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>

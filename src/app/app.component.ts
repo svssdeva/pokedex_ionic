@@ -2,6 +2,8 @@ import {Component, OnDestroy, OnInit, QueryList, Renderer2, ViewChildren} from '
 import {IonRouterOutlet, MenuController, Platform} from '@ionic/angular';
 import {GlobalService} from './services/global-service/global-service.service';
 import {StatusBar} from '@capacitor/status-bar';
+import {AngularFireMessaging} from '@angular/fire/messaging';
+import {FirebaseMessagingWebService} from "./services/firebase-messaging-web/firebase-messaging-web.service";
 
 @Component({
   selector: 'app-root',
@@ -14,11 +16,13 @@ export class AppComponent implements OnInit, OnDestroy {
   lastTimeBackPress = 0;
   timePeriodToExit = 2000;
   isAvailableForeUpdate = false;
-
+  message;
   constructor(private globalService: GlobalService,
               private menuController: MenuController,
               private renderer2: Renderer2,
-              private platform: Platform) {
+              private platform: Platform,
+              private angularFireMessaging: AngularFireMessaging,
+              private firebaseMessagingWebService: FirebaseMessagingWebService) {
     this.appVersion = this.globalService.appVersion || 1;
     this.platform.ready().then(() => {
       this.initializeApp();

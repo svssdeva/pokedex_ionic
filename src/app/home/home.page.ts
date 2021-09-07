@@ -155,6 +155,9 @@ export class HomePage implements OnInit, OnDestroy {
     const { role ,data } = await modal.onDidDismiss();
     console.log(role, data);
   }
+  trackByMethod(i: number, el: PokemonListModal): number {
+    return el.index;
+  }
 }
 
 export class PokemonListModal {

@@ -3,6 +3,7 @@
 	"appName": "Pokedex",
 	"bundledWebRuntime": false,
 	"npmClient": "npm",
+	"hideLogs": true,
 	"webDir": "www",
 	"plugins": {
 		"SplashScreen": {
@@ -11,6 +12,5 @@
 			"splashFullScreen": true,
 			"splashImmersive": true
 		}
-	},
-	"cordova": {}
+	}
 }

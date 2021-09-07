@@ -30,7 +30,8 @@
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
               },
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              "src/firebase-massaging-sw.js"
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
             "scripts": [],
@@ -52,7 +53,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
@@ -118,7 +118,8 @@
                 "input": "src/assets",
                 "output": "/assets"
               },
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              "src/firebase-massaging-sw.js"
             ]
           },
           "configurations": {

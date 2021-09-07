@@ -9,6 +9,7 @@ import {Share} from '@capacitor/share';
 
 import {AngularFireStorage} from '@angular/fire/storage';
 import {lastValueFrom} from 'rxjs';
+import {ScreenReader} from '@capacitor/screen-reader';
 
 @Component({
   selector: 'app-details',
@@ -63,9 +64,9 @@ export class DetailsPage implements OnInit, OnDestroy {
   }
 
   checkScreenReaderEnabled = async () => {
-    /*   const { value } = await ScreenReader.isEnabled();
+       const { value } = await ScreenReader.isEnabled();
        this.screenReaderEnabled = value;
-       console.log('58', this.screenReaderEnabled);*/
+
   };
 
   ngOnInit() {
@@ -202,7 +203,7 @@ export class DetailsPage implements OnInit, OnDestroy {
       if (this.platform.is('hybrid')) {
         this.hapticService.hapticsImpactMedium();
         if (this.screenReaderEnabled === true) {
-          //ScreenReader.speak({ value: data, language: 'en' });
+          ScreenReader.speak({ value: data, language: 'en' });
         } else {
           this.globalService.showMessage('toast', {message: `Speak Up not Supported by your device`});
         }
@@ -240,7 +241,6 @@ export class DetailsPage implements OnInit, OnDestroy {
       console.log(e);
     } finally {
       move.processing = false;
-      console.log(move);
     }
   }
 
@@ -270,6 +270,14 @@ export class DetailsPage implements OnInit, OnDestroy {
     if (genera.length > 0) {
       return genera.filter(item => item.language.name === 'en')[0].genus;
     }
+  }
+
+  trackByAbility(i: number, el: AbilityModal): string {
+    return el.ability.name;
+  }
+
+  trackByMove(i: number, el: MoveModal): string {
+    return el.move.name;
   }
 }
 

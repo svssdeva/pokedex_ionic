@@ -1,9 +1,5 @@
 [
 	{
-		"pkg": "@capacitor-community/firebase-remote-config",
-		"classpath": "com.getcapacitor.community.firebaserc.FirebaseRemoteConfig"
-	},
-	{
 		"pkg": "@capacitor-community/native-audio",
 		"classpath": "com.getcapacitor.community.audio.NativeAudio"
 	},
@@ -38,5 +34,9 @@
 	{
 		"pkg": "@capacitor/storage",
 		"classpath": "com.capacitorjs.plugins.storage.StoragePlugin"
+	},
+	{
+		"pkg": "@robingenz/capacitor-app-update",
+		"classpath": "dev.robingenz.capacitor.appupdate.AppUpdatePlugin"
 	}
 ]
