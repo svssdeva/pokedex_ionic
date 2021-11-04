@@ -15,7 +15,7 @@ import {AngularFireModule} from '@angular/fire';
 import {AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFireStorageModule} from '@angular/fire/storage';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
-import {AngularFireMessagingModule} from '@angular/fire/messaging';
+
 import {FirebaseMessagingWebService} from './services/firebase-messaging-web/firebase-messaging-web.service';
 
 registerLocaleData(localeEn);
@@ -32,8 +32,7 @@ registerLocaleData(localeEn);
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     AngularFireStorageModule,
-    AngularFireDatabaseModule,
-    AngularFireMessagingModule],
+    AngularFireDatabaseModule],
   providers: [{provide: RouteReuseStrategy, useClass: IonicRouteStrategy},
     {provide: LOCALE_ID, useValue: 'en-EN'},
     {

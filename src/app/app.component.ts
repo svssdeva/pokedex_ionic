@@ -20,9 +20,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private globalService: GlobalService,
               private menuController: MenuController,
               private renderer2: Renderer2,
-              private platform: Platform,
-              private angularFireMessaging: AngularFireMessaging,
-              private firebaseMessagingWebService: FirebaseMessagingWebService) {
+              private platform: Platform) {
     this.appVersion = this.globalService.appVersion || 1;
     this.platform.ready().then(() => {
       this.initializeApp();
